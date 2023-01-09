@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -170,5 +171,17 @@ public class SwerveModuleV3 implements SwerveModule {
         mAzimuthPID.setReference(angle, ControlType.kPosition);
 		
 	}
+
+    public double getDistance(){
+        return mDriveEncoder.getPosition();
+    }
+
+    @Override
+    public SwerveModulePosition getPosition() {
+        SwerveModulePosition position = new SwerveModulePosition();
+        position.angle = Rotation2d.fromDegrees(getRotation());
+        position.distanceMeters = getDistance();
+        return position;
+    }
     
 }

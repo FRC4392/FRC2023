@@ -1,6 +1,7 @@
 package org.deceivers.swerve;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface SwerveModule {
@@ -25,6 +26,10 @@ public interface SwerveModule {
      * Return the current state of the swerve module
      */
     SwerveModuleState getState();
+    /**
+     * Return the current state of the swerve module
+     */
+    SwerveModulePosition getPosition();
     /**
      * Get the location of the swerve module relative to the 
      * center of the robot
