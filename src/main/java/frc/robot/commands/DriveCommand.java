@@ -10,11 +10,13 @@ package frc.robot.commands;
 import org.deceivers.util.JoystickHelper;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -26,14 +28,16 @@ public class DriveCommand extends CommandBase {
   private JoystickHelper xHelper = new JoystickHelper(0);
   private JoystickHelper yHelper = new JoystickHelper(0);
   private JoystickHelper rotHelper = new JoystickHelper(0);
+  private JoystickHelper xrHelper = new JoystickHelper(0);
+  private JoystickHelper yrHelper = new JoystickHelper(0);
   private double driveFactor = 1;
-  private PIDController rotationController = new PIDController(.1, .1, .1);
+  private PIDController rotationController = new PIDController(0.4,.0,.0);
 
   public DriveCommand(Drivetrain Drivetrain, XboxController XboxController) {
     mDrivetrain = Drivetrain;
     mController = XboxController;
 
-    rotationController.enableContinuousInput(-180, 180);
+    rotationController.enableContinuousInput(-Math.PI, Math.PI);
     
     addRequirements(mDrivetrain);
   }
@@ -49,9 +53,14 @@ public class DriveCommand extends CommandBase {
     double xVel = 0;
     double yVel = 0;
     double rotVel = 0;
+    double xrVel = 0;
+    double yrVel = 0;
 
     yVel = mController.getLeftY();
     xVel = mController.getLeftX();
+
+    yrVel = mController.getRightY();
+    xrVel = mController.getRightX();
 
     //slow down button
     if(!mController.getRightBumper()){
@@ -72,18 +81,22 @@ public class DriveCommand extends CommandBase {
     yVel = yHelper.setInput(yVel).applyDeadband(0.1).value;
     xVel = xHelper.setInput(xVel).applyDeadband(0.1).value;
     rotVel = rotHelper.setInput(rotVel).applyDeadband(0.1).value;
+
+    yrVel = yrHelper.setInput(yrVel).applyDeadband(0.1).value;
+    xrVel = xrHelper.setInput(xrVel).applyDeadband(0.1).value;
     
     yVel = yVel*driveFactor;
     xVel = xVel*driveFactor;
     rotVel = rotVel*driveFactor;
 
-    double joystickMagnitude = Math.atan2(mController.getRightX(), mController.getRightY());
-    double joystickAngle = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));
-
-    if (joystickMagnitude > 0.25){
-      rotVel = rotationController.calculate(mDrivetrain.getRotation(), joystickAngle);
-      if (Math.abs(rotVel) > 1){
-        rotVel = Math.signum(rotVel);
+    Rotation2d joystickAngle = Rotation2d.fromRadians(Math.atan2(-mController.getRightX(), -mController.getRightY()));
+    SmartDashboard.putNumber("joystickAngle", joystickAngle.getDegrees());
+    double joystickMagnitude = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));
+    SmartDashboard.putNumber("joystickMagnitude", joystickMagnitude);
+     if (joystickMagnitude > .1){
+       rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), joystickAngle.getRadians());
+      if (Math.abs(rotVel) > joystickMagnitude){
+        rotVel = joystickMagnitude*Math.signum(rotVel);
       }
     }
 
