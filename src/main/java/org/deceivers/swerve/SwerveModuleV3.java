@@ -1,6 +1,7 @@
-package frc.robot.swerve;
+package org.deceivers.swerve;
 
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -12,6 +13,7 @@ import com.revrobotics.SparkMaxAnalogSensor.Mode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,6 +115,17 @@ public class SwerveModuleV3 implements SwerveModule {
         setAzimuthZero();
     }
 
+    public SwerveModulePosition getPosition(){
+        SwerveModulePosition position = new SwerveModulePosition();
+        position.angle = Rotation2d.fromDegrees(getRotation());
+        position.distanceMeters = getDistance();
+
+        return position;
+    }
+
+    public double getDistance(){
+        return mDriveEncoder.getPosition();
+    }
     @Override
     public void log() {
         SmartDashboard.putNumber(mName + " Azimuth Position", mAzimuthEncoder.getPosition());
