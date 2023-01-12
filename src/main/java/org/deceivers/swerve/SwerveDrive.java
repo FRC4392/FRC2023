@@ -1,4 +1,4 @@
-package org.deceivers.swerve;
+package frc.robot.swerve;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,6 +29,9 @@ public class SwerveDrive {
     private final DoubleSupplier mGyroAngle;
     private ProfiledPIDController rotationPIDController = new ProfiledPIDController(10,.1,.1,new TrapezoidProfile.Constraints(8, 2));
 
+    //move gyro out of this class?
+
+
     public SwerveDrive(DoubleSupplier gyroAngle, SwerveModule... modules){
         mGyroAngle = gyroAngle;
         numModules = modules.length;
@@ -44,14 +46,10 @@ public class SwerveDrive {
 
         rotationPIDController.enableContinuousInput(-180.0, 180.0);
 
-        SwerveModulePosition[] positions = new SwerveModulePosition[numModules];
-        for (int i = 0; i < numModules; i++) {
-            positions[i] = mModules[i].getPosition();
-        }
-
         mDriveController = new HolonomicDriveController(new PIDController(4,0,0), new PIDController(4,0,0), rotationPIDController);
-        mSwerveDriveOdometry = new SwerveDriveOdometry(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), positions);
+        mSwerveDriveOdometry = new SwerveDriveOdometry(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()));
 
+        Arrays.stream(mModules).forEach(SwerveModule::init);
         Arrays.stream(mModules).forEach(SwerveModule::init);
     }
 
@@ -62,7 +60,7 @@ public class SwerveDrive {
     public void drive(double forward, double strafe, double azimuth, boolean fieldRelative){
         ChassisSpeeds speeds;
         if (fieldRelative){
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, azimuth, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()));
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, azimuth, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()-180));
         } else {
             speeds = new ChassisSpeeds(forward, strafe, azimuth);
         }
@@ -93,14 +91,15 @@ public class SwerveDrive {
     }
 
     public Pose2d updateOdometry(){
-        SwerveModulePosition[] positions = new SwerveModulePosition[numModules];
+        SwerveModuleState[] states = new SwerveModuleState[numModules];
         for (int i = 0; i < numModules; i++) {
-            positions[i] = mModules[i].getPosition();
+            states[i] = mModules[i].getState();
         }
-                
-        return mSwerveDriveOdometry.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), positions);
+
+        return mSwerveDriveOdometry.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
 
+    //derek
     public ChassisSpeeds getChassisSpeeds(){
         SwerveModuleState[] states = new SwerveModuleState[numModules];
         for (int i = 0; i < numModules; i++) {
@@ -109,7 +108,7 @@ public class SwerveDrive {
         ChassisSpeeds chassisSpeeds = mKinematics.toChassisSpeeds(states);
         return(chassisSpeeds);
     }
-    
+
     public void followPath(double startTime, PathPlannerTrajectory pptrajectory){
         PathPlannerState goal = (PathPlannerState) pptrajectory.sample(Timer.getFPGATimestamp() - startTime);
         
@@ -142,13 +141,12 @@ public class SwerveDrive {
 
     public void setLocation(double x, double y, double angle){
         Pose2d newPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
+        mSwerveDriveOdometry.resetPosition(newPose, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()));
+        rotationPIDController.reset(angle);
+    }
 
-        SwerveModulePosition[] positions = new SwerveModulePosition[numModules];
-        for (int i = 0; i < numModules; i++) {
-            positions[i] = mModules[i].getPosition();
-        }
-
-        mSwerveDriveOdometry.resetPosition(Rotation2d.fromDegrees(angle), positions, newPose);
+    public void setStartPostion(){
+        //mSwerveDriveOdometry.resetPosition(trajectory.getInitialPose(), Rotation2d.fromDegrees(0));
     }
 
     public void setModulesAngle(double angle, int module){
