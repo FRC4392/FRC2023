@@ -28,7 +28,7 @@ public class SwerveDrive {
     private final SwerveDriveOdometry mSwerveDriveOdometry;
     private final HolonomicDriveController mDriveController;
     private final DoubleSupplier mGyroAngle;
-    private ProfiledPIDController rotationPIDController = new ProfiledPIDController(10,.1,.1,new TrapezoidProfile.Constraints(8, 2));
+    private ProfiledPIDController rotationPIDController = new ProfiledPIDController(15,.1,.1,new TrapezoidProfile.Constraints(500, 500));
 
     //move gyro out of this class?
 
@@ -45,7 +45,7 @@ public class SwerveDrive {
 
         mKinematics = new SwerveDriveKinematics(moduleLocations);
 
-        rotationPIDController.enableContinuousInput(-180.0, 180.0);
+        rotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         mDriveController = new HolonomicDriveController(new PIDController(4,0,0), new PIDController(4,0,0), rotationPIDController);
 

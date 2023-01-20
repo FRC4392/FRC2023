@@ -55,7 +55,7 @@ public class SwerveModuleV3 implements SwerveModule {
         mDriveEncoder = mDriveMotor.getEncoder();
         mAzimuthAbsoluteEncoder = mAzimuthMotor.getAnalog(Mode.kAbsolute);
         mAzimuthMotor.setInverted(true);
-        mDriveEncoder.setPositionConversionFactor(1);//.004356
+        mDriveEncoder.setPositionConversionFactor((12.0/18.0)*(15.0/40.0)*0.2393893602);//.004356(12/18)*(15/40)*0.4787787204
         mDriveEncoder.setVelocityConversionFactor((0.239/(4.5*60)));//.239
         mDriveEncoder.setPosition(0);
         mDrivePID = mDriveMotor.getPIDController();

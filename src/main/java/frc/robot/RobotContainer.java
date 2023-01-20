@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.FollowPathPlannerPath;
 import frc.robot.subsystems.Drivetrain;
 
 /**
@@ -39,6 +42,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return new FollowPathPlannerPath(PathPlanner.loadPath("New Path", 4, 3), true, drivetrain);
   }
 }
