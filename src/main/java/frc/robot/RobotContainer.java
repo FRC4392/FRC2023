@@ -42,6 +42,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new FollowPathPlannerPath(PathPlanner.loadPath("New Path", 4, 3), true, drivetrain);
+    return new FollowPathPlannerPath(PathPlanner.loadPath("New Path", 1.5, 1), true, drivetrain);
   }
 }

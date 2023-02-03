@@ -41,7 +41,7 @@ public class FollowPathPlannerPath extends CommandBase {
 
     timer.reset();
     timer.start();
-    initTime = timer.getFPGATimestamp();
+    initTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
