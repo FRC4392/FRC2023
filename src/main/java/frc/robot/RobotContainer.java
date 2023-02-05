@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.FollowPathPlannerPath;
+import frc.robot.commands.ManualArmDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 
 /**
@@ -22,6 +24,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   Drivetrain drivetrain = new Drivetrain();
   XboxController driverController = new XboxController(0);
+  XboxController operatorController = new XboxController(1);
+  Arm arm = new Arm();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -33,6 +37,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+    arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
   }
 
 
