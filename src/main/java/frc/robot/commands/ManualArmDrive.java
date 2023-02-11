@@ -42,21 +42,6 @@ public class ManualArmDrive extends CommandBase {
     robotArm.setElbow(xHelper.setInput(operatorController.getLeftY()).applyDeadband(.1).value);
     robotArm.setShoulder(yHelper.setInput(operatorController.getRightY()).applyDeadband(.1).value);
 
-    if (operatorController.getAButton()){
-      robotArm.setIntake(1);
-    } else if (operatorController.getBButton()){
-      robotArm.setIntake(-.2);
-    } else {
-      robotArm.setIntake(0);
-    }
-
-    if (operatorController.getLeftBumper()){
-      robotArm.setGripper(.3);
-    } else if (operatorController.getRightBumper()){
-      robotArm.setGripper(-.5);
-    } else {
-      robotArm.setGripper(0);
-    }
   }
 
   // Called once the command ends or is interrupted.

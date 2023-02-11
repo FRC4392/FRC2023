@@ -35,9 +35,8 @@ public class Robot extends TimedRobot {
   private int rainbowtime = 0;
   private int fade = 0;
   private int direction = 0;
-  private int delay = 0;
   private AddressableLED m_led = new AddressableLED(0);
-  private AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(100);
+  private AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(45);
   private int i = 0;
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -75,7 +74,7 @@ public class Robot extends TimedRobot {
           }
         break;
       case 2:
-          if(i < 100){
+          if(i < 45){
             m_ledBuffer.setHSV(i, 0, 0, 0);
             i++;
 
@@ -110,7 +109,7 @@ public class Robot extends TimedRobot {
         }
         break;
       case 4:
-        if(i < 100){
+        if(i < 45){
           m_ledBuffer.setHSV(i, 0, 0, 0);
           i++;
 
@@ -120,8 +119,7 @@ public class Robot extends TimedRobot {
         }
         break;
       case 5:
-      delay++;
-        if((i < (m_ledBuffer.getLength()-1)) && (delay%3 ==0)){
+        if((i < (m_ledBuffer.getLength()-1))){
           i++;
           m_ledBuffer.setHSV(i-1, 0, 0, 0);
           m_ledBuffer.setHSV(i, 80,255,128);
@@ -130,8 +128,26 @@ public class Robot extends TimedRobot {
         }
         break;
       case 6:
-      delay++;
-        if((i > 1) && (delay%3 == 0)){
+        if((i > 1)){
+          i--;
+          m_ledBuffer.setHSV(i+1, 0, 0, 0);
+          m_ledBuffer.setHSV(i, 80,255,128);
+        }else{
+          state = 7;
+          i = 0;
+        }
+        break;
+        case 7:
+        if((i < (m_ledBuffer.getLength()-1))){
+          i++;
+          m_ledBuffer.setHSV(i-1, 0, 0, 0);
+          m_ledBuffer.setHSV(i, 80,255,128);
+        } else{
+          state = 8;
+        }
+        break;
+      case 8:
+        if((i > 1)){
           i--;
           m_ledBuffer.setHSV(i+1, 0, 0, 0);
           m_ledBuffer.setHSV(i, 80,255,128);
