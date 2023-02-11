@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +29,16 @@ public class Robot extends TimedRobot {
 
   Drivetrain drivetrain = new Drivetrain();
   Arm arm = new Arm();
+
+  private int state = 0;
+  private int m_rainbowFirstPixelHue = 0;
+  private int rainbowtime = 0;
+  private int fade = 0;
+  private int direction = 0;
+  private int delay = 0;
+  private AddressableLED m_led = new AddressableLED(0);
+  private AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(100);
+  private int i = 0;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -34,6 +46,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     configureBindings();
+    m_led.setLength(m_ledBuffer.getLength());
+    m_led.start();
   }
 
   /**
@@ -49,6 +63,91 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    switch(state){
+      case 1:
+          if(rainbowtime < 300){
+            rainbow();
+            rainbowtime++;
+          } else{
+            rainbowtime = 0;
+            i = 0;
+            state = 2;
+          }
+        break;
+      case 2:
+          if(i < 100){
+            m_ledBuffer.setHSV(i, 0, 0, 0);
+            i++;
+
+          }else{
+            state = 3;
+            i = 0;
+          }
+        break;
+      case 3:
+        if(rainbowtime < 300){
+          rainbowtime++;
+          for (i = 0; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setHSV(i, 80, 255, fade);
+          }
+          if(direction == 0){
+            fade+=4;
+            if(fade == 128){  
+              direction = 1;
+            }
+          } else if(direction == 1) {
+            fade-=4;
+            if(fade == 0){
+              direction = 0;
+            }
+          }
+        } else{
+          state = 4;
+          i = 0;
+          fade = 0;
+          direction = 0;
+          rainbowtime = 0;
+        }
+        break;
+      case 4:
+        if(i < 100){
+          m_ledBuffer.setHSV(i, 0, 0, 0);
+          i++;
+
+        }else{
+          state = 5;
+          i = 0;
+        }
+        break;
+      case 5:
+      delay++;
+        if((i < (m_ledBuffer.getLength()-1)) && (delay%3 ==0)){
+          i++;
+          m_ledBuffer.setHSV(i-1, 0, 0, 0);
+          m_ledBuffer.setHSV(i, 80,255,128);
+        } else{
+          state = 6;
+        }
+        break;
+      case 6:
+      delay++;
+        if((i > 1) && (delay%3 == 0)){
+          i--;
+          m_ledBuffer.setHSV(i+1, 0, 0, 0);
+          m_ledBuffer.setHSV(i, 80,255,128);
+        }else{
+          state = 1;
+          i = 0;
+        }
+        break;
+      default:
+        state = 1;
+        
+      break;
+    }
+
+    // Set the data
+    m_led.setData(m_ledBuffer);
     CommandScheduler.getInstance().run();
   }
 
@@ -120,5 +219,20 @@ public class Robot extends TimedRobot {
   private void configureBindings() {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
     arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
+  }
+
+  private void rainbow() {
+    // For every pixel
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue, 255, 128);
+    }
+    // Increase by to make the rainbow "move"
+    m_rainbowFirstPixelHue += 1;
+    // Check bounds
+    m_rainbowFirstPixelHue %= 180;
   }
 }
