@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import org.deceivers.util.JoystickHelper;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
@@ -11,10 +13,17 @@ import frc.robot.subsystems.Arm;
 public class ManualArmDrive extends CommandBase {
   private final Arm robotArm;
   private final XboxController operatorController;
+
+  private JoystickHelper xHelper = new JoystickHelper(0);
+  private JoystickHelper yHelper = new JoystickHelper(0);
+  private JoystickHelper rotHelper = new JoystickHelper(0);
+  private JoystickHelper xrHelper = new JoystickHelper(0);
+  private JoystickHelper yrHelper = new JoystickHelper(0);
   /** Creates a new ManualArmDrive. */
   public ManualArmDrive(Arm arm, XboxController controller) {
     robotArm = arm;
     operatorController = controller;
+    
 
     addRequirements(arm);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,8 +38,25 @@ public class ManualArmDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    robotArm.setElbow(operatorController.getLeftY());
-    robotArm.setShoulder(operatorController.getRightY());
+    
+    robotArm.setElbow(xHelper.setInput(operatorController.getLeftY()).applyDeadband(.1).value);
+    robotArm.setShoulder(yHelper.setInput(operatorController.getRightY()).applyDeadband(.1).value);
+
+    if (operatorController.getAButton()){
+      robotArm.setIntake(1);
+    } else if (operatorController.getBButton()){
+      robotArm.setIntake(-.2);
+    } else {
+      robotArm.setIntake(0);
+    }
+
+    if (operatorController.getLeftBumper()){
+      robotArm.setGripper(.3);
+    } else if (operatorController.getRightBumper()){
+      robotArm.setGripper(-.5);
+    } else {
+      robotArm.setGripper(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
