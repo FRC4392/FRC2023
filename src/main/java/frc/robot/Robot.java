@@ -10,6 +10,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AutoElbow;
+import frc.robot.commands.AutoShoulder;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ManualArmDrive;
 import frc.robot.subsystems.Arm;
@@ -234,7 +238,15 @@ public class Robot extends TimedRobot {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-    arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
+    arm.setDefaultCommand(new AutoElbow(arm));
+
+    //Trigger elbowTest = new JoystickButton(operatorController, XboxController.Button.kA.value);
+    //elbowTest.whileTrue(new AutoElbow(arm));
+
+    //Trigger shoulderTest = new JoystickButton(operatorController, XboxController.Button.kB.value);
+    //shoulderTest.whileTrue(new AutoShoulder(arm));
+
+
   }
 
   private void rainbow() {
