@@ -29,12 +29,19 @@ public class Arm extends SubsystemBase {
   private final SparkMaxPIDController elbowPID;
   private final ProfiledPIDController elbowPIDController;
   private final ProfiledPIDController shoulderPIDController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxVel, minVel, maxAcc, allowedErr;
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 360);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360);
+  private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxVel, maxAcc;
+  private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
+  private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
+  private final CANSparkMax Elbow = new CANSparkMax(23, MotorType.kBrushless);
 
-  CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
-  CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
+  private TrapezoidProfile.State elbowSetpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State shoulderSetpoint = new TrapezoidProfile.State();
 
-  CANSparkMax Elbow = new CANSparkMax(23, MotorType.kBrushless);
+  private TrapezoidProfile.State elbowGoal = new TrapezoidProfile.State();
+  private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State();
+
   /** Creates a new Arm. */
   public Arm() {
 
@@ -52,10 +59,10 @@ public class Arm extends SubsystemBase {
     Shoulder1.setInverted(true);
     Shoulder2.setInverted(true);
 
-    shoulder1Encoder.setPositionConversionFactor(360.0/98.38556505223172);
-    elbowEncoder.setPositionConversionFactor(360.0/98.38556505223172);
-    shoulder1Encoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
-    elbowEncoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
+    shoulder1Encoder.setPositionConversionFactor(360.0/95.7264957265);
+    elbowEncoder.setPositionConversionFactor(360.0/95.7264957265);
+    shoulder1Encoder.setVelocityConversionFactor((360.0/95.7264957265)/60);
+    elbowEncoder.setVelocityConversionFactor((360.0/95.7264957265)/60);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
@@ -72,7 +79,7 @@ public class Arm extends SubsystemBase {
     kD = 0; 
     kIz = 0; 
     kFF = .0042;
-    kMaxOutput = 1; 
+    kMaxOutput = 1;
     kMinOutput = -1;
     maxVel = 360/1; // rpm
     maxAcc = 360.0;
@@ -109,16 +116,24 @@ public class Arm extends SubsystemBase {
   }
 
   public void setShoulderPosition(double position){
-    double setpoint = shoulderPIDController.calculate(shoulCanCoder.getAbsolutePosition(), position);
-    shoulderPID.setReference(setpoint, ControlType.kVelocity, 0, .5*Math.sin(Units.degreesToRadians(shoulCanCoder.getAbsolutePosition())));
+    shoulderGoal = new TrapezoidProfile.State(position, 0);
+
+    TrapezoidProfile profile = new TrapezoidProfile(shoulderProfileConstraints, shoulderGoal, shoulderSetpoint);
+    shoulderSetpoint = profile.calculate(0.02);
+
+    elbowPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, -.6*Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()))+(.0042*elbowSetpoint.velocity*12));
   }
   public void setElbowPosition(double position){
-    double setpoint = elbowPIDController.calculate(elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition(), position);
-    elbowPID.setReference(setpoint, ControlType.kVelocity, 0, .5*Math.sin(Units.degreesToRadians(elbowCanCoder.getAbsolutePosition())));
+    elbowGoal = new TrapezoidProfile.State(position, 0);
+
+    TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, shoulderSetpoint);
+    elbowSetpoint = profile.calculate(0.02);
+
+    elbowPID.setReference(elbowSetpoint.position, ControlType.kPosition, 0, .5*Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()))+(.0042*elbowSetpoint.velocity*12));
   }
 
   public void resetElbow(){
-    elbowPIDController.reset(elbowCanCoder.getAbsolutePosition());
+    elbowPIDController.reset(elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition());
   }
 
   public void resetShoulder(){

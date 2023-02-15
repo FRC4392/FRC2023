@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleV3 implements SwerveModule {
 
@@ -26,8 +25,6 @@ public class SwerveModuleV3 implements SwerveModule {
     private final SparkMaxPIDController mAzimuthPID;
     private final Translation2d mLocation;
     private final String mName; 
-    private boolean isInverted;
-    private double setpoint;
 
     //need to update the speed to m/s
 
@@ -149,61 +146,40 @@ public class SwerveModuleV3 implements SwerveModule {
     //Log swerve data
     @Override
     public void log() {
-        SmartDashboard.putNumber(mName + " Azimuth Position", mAzimuthIncrementalEncoder.getPosition());
-        SmartDashboard.putNumber(mName + "Absolute Position", mAzimuthAbsoluteEncoder.getPosition());
-        SmartDashboard.putNumber(mName + " Incremental Position", mAzimuthIncrementalEncoder.getPosition());
-        SmartDashboard.putNumber(mName + " Velocity", mDriveEncoder.getVelocity());
-        SmartDashboard.putNumber(mName + "Drive Encoder Position", mDriveEncoder.getPosition());
-        SmartDashboard.putNumber(mName + " Rotation Setpoint", setpoint);
-        SmartDashboard.putNumber(mName + "Percent Output", mDriveMotor.get());
+        // SmartDashboard.putNumber(mName + " Azimuth Position", mAzimuthIncrementalEncoder.getPosition());
+        // SmartDashboard.putNumber(mName + "Absolute Position", mAzimuthAbsoluteEncoder.getPosition());
+        // SmartDashboard.putNumber(mName + " Incremental Position", mAzimuthIncrementalEncoder.getPosition());
+        // SmartDashboard.putNumber(mName + " Velocity", mDriveEncoder.getVelocity());
+        // SmartDashboard.putNumber(mName + "Drive Encoder Position", mDriveEncoder.getPosition());
+        // SmartDashboard.putNumber(mName + " Rotation Setpoint", setpoint);
+        // SmartDashboard.putNumber(mName + "Percent Output", mDriveMotor.get());
     }
 
     //Set the speed and direction of the swerve module
     @Override
     public void set(SwerveModuleState drive) {
-        double Angle = drive.angle.getDegrees();
-        SmartDashboard.putNumber(mName + " Given Setpoint", Angle);
-        double Velocity = drive.speedMetersPerSecond;
+        Rotation2d current = Rotation2d.fromDegrees(mAzimuthAbsoluteEncoder.getPosition());
+        SwerveModuleState optimizedState = SwerveModuleState.optimize(drive, current);
+        double setpoint = optimizedState.angle.getDegrees();
+        // SmartDashboard.putNumber(mName + " Given Setpoint", Angle);
+        double velocity = optimizedState.speedMetersPerSecond;
 
-        double azimuthPosition = mAzimuthAbsoluteEncoder.getPosition();
-        double azimuthError = Math.IEEEremainder(Angle - azimuthPosition, 360);
-        SmartDashboard.putNumber(mName + " Azimuth Error", azimuthError);
-
-        isInverted = Math.abs(azimuthError) > 90;
-        if (isInverted) {
-            azimuthError -= Math.copySign(180, azimuthError);
-            Velocity = -Velocity;
-        }
-        setpoint = azimuthError + azimuthPosition;
-        SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
+        // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
         mAzimuthPID.setReference(setpoint, ControlType.kPosition);
-        mDriveMotor.set(Velocity);
+        mDriveMotor.set(velocity);
     }
 
     @Override
     public void setClosedLoop(SwerveModuleState drive){
-        if (Math.abs(mAzimuthIncrementalEncoder.getPosition() - mAzimuthAbsoluteEncoder.getPosition()) > 1){
-            //setAzimuthZero();
-        }
+        Rotation2d current = Rotation2d.fromDegrees(mAzimuthAbsoluteEncoder.getPosition());
+        SwerveModuleState optimizedState = SwerveModuleState.optimize(drive, current);
+        double setpoint = optimizedState.angle.getDegrees();
+        // SmartDashboard.putNumber(mName + " Given Setpoint", Angle);
+        double velocity = optimizedState.speedMetersPerSecond;
 
-        double Angle = drive.angle.getDegrees();
-        SmartDashboard.putNumber(mName + " Given Setpoint", Angle);
-        double Velocity = drive.speedMetersPerSecond;
-
-        double azimuthPosition = mAzimuthIncrementalEncoder.getPosition();
-        double azimuthError = Math.IEEEremainder(Angle - azimuthPosition, 360);
-        SmartDashboard.putNumber(mName + " Azimuth Error", azimuthError);
-
-        isInverted = Math.abs(azimuthError) > 90;
-        if (isInverted) {
-            azimuthError -= Math.copySign(180, azimuthError);
-            Velocity = -Velocity;
-        }
-        setpoint = azimuthError + azimuthPosition;
-        SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
+        // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
         mAzimuthPID.setReference(setpoint, ControlType.kPosition);
-        SmartDashboard.putNumber(mName + " Wheel Setpoint", Velocity);
-        mDrivePID.setReference(Velocity, ControlType.kVelocity);
+        mDrivePID.setReference(velocity, ControlType.kVelocity);
     }
 
     //Stop all motors
