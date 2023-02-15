@@ -10,6 +10,7 @@ package frc.robot.commands;
 import org.deceivers.util.JoystickHelper;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -30,6 +31,9 @@ public class DriveCommand extends CommandBase {
   private JoystickHelper yrHelper = new JoystickHelper(0);
   private double driveFactor = 1;
   private PIDController rotationController = new PIDController(0.4,.0,.0);
+  private SlewRateLimiter xfilter = new SlewRateLimiter(1);
+  private SlewRateLimiter yfilter = new SlewRateLimiter(1);
+  private SlewRateLimiter rotfilter = new SlewRateLimiter(1);
 
   public DriveCommand(Drivetrain Drivetrain, XboxController XboxController) {
     mDrivetrain = Drivetrain;
@@ -60,8 +64,8 @@ public class DriveCommand extends CommandBase {
     yrVel = mController.getRightY();
     xrVel = mController.getRightX();
 
-    //slow down button
-    if(!mController.getRightBumper()){
+    //slow down `on
+    if(mController.getRightBumper()){
       driveFactor = 0.3;
     } else {
       driveFactor = 1.0;
@@ -109,7 +113,7 @@ public class DriveCommand extends CommandBase {
     //boolean fieldRelative = true;
 
     if (fieldRelative){
-      mDrivetrain.drive(yVel, xVel, rotVel, fieldRelative);
+      mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
     } else {
       mDrivetrain.drive(yVel*-1, xVel*-1, rotVel, fieldRelative);
     }

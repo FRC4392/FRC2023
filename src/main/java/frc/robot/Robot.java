@@ -16,8 +16,13 @@ import frc.robot.commands.AutoElbow;
 import frc.robot.commands.AutoShoulder;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ManualArmDrive;
+import frc.robot.commands.manualGripper;
+import frc.robot.commands.manualGripper2;
+import frc.robot.commands.manualGripperClose;
+import frc.robot.commands.manualGripperOpen;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.JoeBident;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -33,6 +38,7 @@ public class Robot extends TimedRobot {
 
   Drivetrain drivetrain = new Drivetrain();
   Arm arm = new Arm();
+  JoeBident bident = new JoeBident();
 
   private int state = 0;
   private int m_rainbowFirstPixelHue = 0;
@@ -238,13 +244,19 @@ public class Robot extends TimedRobot {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-    arm.setDefaultCommand(new AutoElbow(arm));
+    arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
 
-    //Trigger elbowTest = new JoystickButton(operatorController, XboxController.Button.kA.value);
-    //elbowTest.whileTrue(new AutoElbow(arm));
+    Trigger elbowTest = new JoystickButton(operatorController, XboxController.Button.kA.value);
+    elbowTest.whileTrue(new manualGripper(bident));
 
-    //Trigger shoulderTest = new JoystickButton(operatorController, XboxController.Button.kB.value);
-    //shoulderTest.whileTrue(new AutoShoulder(arm));
+    Trigger shoulderTest = new JoystickButton(operatorController, XboxController.Button.kB.value);
+    shoulderTest.whileTrue(new manualGripper2(bident));
+
+    Trigger gripperTest = new JoystickButton(operatorController, XboxController.Button.kX.value);
+    gripperTest.whileTrue(new manualGripperClose(bident));
+
+    Trigger gripperTest2 = new JoystickButton(operatorController, XboxController.Button.kY.value);
+    gripperTest2.whileTrue(new manualGripperOpen(bident));
 
 
   }

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,9 +26,12 @@ public class JoeBident extends SubsystemBase {
     JillBident.follow(HunterBident, true);
 
     HunterBident.setSmartCurrentLimit(25);
+    HunterBident.setIdleMode(IdleMode.kBrake);
     JillBident.setSmartCurrentLimit(25);
+    JillBident.setIdleMode(IdleMode.kBrake);
     
     CamellaHarris.setSmartCurrentLimit(15);
+    CamellaHarris.setIdleMode(IdleMode.kBrake);
   }
   public void setIntake(double velocity){
     HunterBident.set(velocity);

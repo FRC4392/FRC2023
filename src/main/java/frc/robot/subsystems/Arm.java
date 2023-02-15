@@ -62,8 +62,8 @@ public class Arm extends SubsystemBase {
     Shoulder1.enableSoftLimit(SoftLimitDirection.kForward, true);
     Shoulder1.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-    Elbow.setSoftLimit(SoftLimitDirection.kForward, 120);
-    Elbow.setSoftLimit(SoftLimitDirection.kReverse, -120);
+    Elbow.setSoftLimit(SoftLimitDirection.kForward, 180);
+    Elbow.setSoftLimit(SoftLimitDirection.kReverse, -180);
     Elbow.enableSoftLimit(SoftLimitDirection.kForward, true);
     Elbow.enableSoftLimit(SoftLimitDirection.kReverse, true);
     
@@ -99,7 +99,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setShoulder(double Velocity){
-    double kFFArb = .5*Math.sin(Units.degreesToRadians(shoulCanCoder.getAbsolutePosition()));
+    double kFFArb = -.6*Math.sin(Units.degreesToRadians(shoulCanCoder.getAbsolutePosition()));
     Shoulder1.setVoltage(((Velocity*12)*.3)+kFFArb);
   }
 
@@ -130,9 +130,11 @@ public class Arm extends SubsystemBase {
   elbowEncoder.setPosition(elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition());
  }
 
+ 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    SmartDashboard.putNumber("Shoulder_Angle", shoulCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Elbow_Angle", elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition());
   }
 }
