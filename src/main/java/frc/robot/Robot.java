@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoElbow;
+import frc.robot.commands.AutoElbow2;
 import frc.robot.commands.AutoShoulder;
+import frc.robot.commands.AutoShoulder2;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ManualArmDrive;
 import frc.robot.commands.manualGripper;
@@ -72,108 +74,108 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    switch(state){
-      case 1:
-          if(rainbowtime < 300){
-            rainbow();
-            rainbowtime++;
-          } else{
-            rainbowtime = 0;
-            i = 0;
-            state = 2;
-          }
-        break;
-      case 2:
-          if(i < 45){
-            m_ledBuffer.setHSV(i, 0, 0, 0);
-            i++;
+    // switch(state){
+    //   case 1:
+    //       if(rainbowtime < 300){
+    //         rainbow();
+    //         rainbowtime++;
+    //       } else{
+    //         rainbowtime = 0;
+    //         i = 0;
+    //         state = 2;
+    //       }
+    //     break;
+    //   case 2:
+    //       if(i < 45){
+    //         m_ledBuffer.setHSV(i, 0, 0, 0);
+    //         i++;
 
-          }else{
-            state = 3;
-            i = 0;
-          }
-        break;
-      case 3:
-        if(rainbowtime < 300){
-          rainbowtime++;
-          for (i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setHSV(i, 80, 255, fade);
-          }
-          if(direction == 0){
-            fade+=4;
-            if(fade == 128){  
-              direction = 1;
-            }
-          } else if(direction == 1) {
-            fade-=4;
-            if(fade == 0){
-              direction = 0;
-            }
-          }
-        } else{
-          state = 4;
-          i = 0;
-          fade = 0;
-          direction = 0;
-          rainbowtime = 0;
-        }
-        break;
-      case 4:
-        if(i < 45){
-          m_ledBuffer.setHSV(i, 0, 0, 0);
-          i++;
+    //       }else{
+    //         state = 3;
+    //         i = 0;
+    //       }
+    //     break;
+    //   case 3:
+    //     if(rainbowtime < 300){
+    //       rainbowtime++;
+    //       for (i = 0; i < m_ledBuffer.getLength(); i++) {
+    //         m_ledBuffer.setHSV(i, 80, 255, fade);
+    //       }
+    //       if(direction == 0){
+    //         fade+=4;
+    //         if(fade == 128){  
+    //           direction = 1;
+    //         }
+    //       } else if(direction == 1) {
+    //         fade-=4;
+    //         if(fade == 0){
+    //           direction = 0;
+    //         }
+    //       }
+    //     } else{
+    //       state = 4;
+    //       i = 0;
+    //       fade = 0;
+    //       direction = 0;
+    //       rainbowtime = 0;
+    //     }
+    //     break;
+    //   case 4:
+    //     if(i < 45){
+    //       m_ledBuffer.setHSV(i, 0, 0, 0);
+    //       i++;
 
-        }else{
-          state = 5;
-          i = 0;
-        }
-        break;
-      case 5:
-        if((i < (m_ledBuffer.getLength()-1))){
-          i++;
-          m_ledBuffer.setHSV(i-1, 0, 0, 0);
-          m_ledBuffer.setHSV(i, 80,255,128);
-        } else{
-          state = 6;
-        }
-        break;
-      case 6:
-        if((i > 1)){
-          i--;
-          m_ledBuffer.setHSV(i+1, 0, 0, 0);
-          m_ledBuffer.setHSV(i, 80,255,128);
-        }else{
-          state = 7;
-          i = 0;
-        }
-        break;
-        case 7:
-        if((i < (m_ledBuffer.getLength()-1))){
-          i++;
-          m_ledBuffer.setHSV(i-1, 0, 0, 0);
-          m_ledBuffer.setHSV(i, 80,255,128);
-        } else{
-          state = 8;
-        }
-        break;
-      case 8:
-        if((i > 1)){
-          i--;
-          m_ledBuffer.setHSV(i+1, 0, 0, 0);
-          m_ledBuffer.setHSV(i, 80,255,128);
-        }else{
-          state = 1;
-          i = 0;
-        }
-        break;
-      default:
-        state = 1;
+    //     }else{
+    //       state = 5;
+    //       i = 0;
+    //     }
+    //     break;
+    //   case 5:
+    //     if((i < (m_ledBuffer.getLength()-1))){
+    //       i++;
+    //       m_ledBuffer.setHSV(i-1, 0, 0, 0);
+    //       m_ledBuffer.setHSV(i, 80,255,128);
+    //     } else{
+    //       state = 6;
+    //     }
+    //     break;
+    //   case 6:
+    //     if((i > 1)){
+    //       i--;
+    //       m_ledBuffer.setHSV(i+1, 0, 0, 0);
+    //       m_ledBuffer.setHSV(i, 80,255,128);
+    //     }else{
+    //       state = 7;
+    //       i = 0;
+    //     }
+    //     break;
+    //     case 7:
+    //     if((i < (m_ledBuffer.getLength()-1))){
+    //       i++;
+    //       m_ledBuffer.setHSV(i-1, 0, 0, 0);
+    //       m_ledBuffer.setHSV(i, 80,255,128);
+    //     } else{
+    //       state = 8;
+    //     }
+    //     break;
+    //   case 8:
+    //     if((i > 1)){
+    //       i--;
+    //       m_ledBuffer.setHSV(i+1, 0, 0, 0);
+    //       m_ledBuffer.setHSV(i, 80,255,128);
+    //     }else{
+    //       state = 1;
+    //       i = 0;
+    //     }
+    //     break;
+    //   default:
+    //     state = 1;
         
-      break;
-    }
+    //   break;
+    // }
 
-    // Set the data
-    m_led.setData(m_ledBuffer);
+    // // Set the data
+    // m_led.setData(m_ledBuffer);
     CommandScheduler.getInstance().run();
   }
 
@@ -244,19 +246,19 @@ public class Robot extends TimedRobot {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-    arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
+    //arm.setDefaultCommand(new ManualArmDrive(arm, operatorController));
 
     Trigger elbowTest = new JoystickButton(operatorController, XboxController.Button.kA.value);
-    elbowTest.whileTrue(new manualGripper(bident));
+    elbowTest.whileTrue(new AutoElbow(arm));
 
     Trigger shoulderTest = new JoystickButton(operatorController, XboxController.Button.kB.value);
-    shoulderTest.whileTrue(new manualGripper2(bident));
+    shoulderTest.whileTrue(new AutoElbow2(arm));
 
     Trigger gripperTest = new JoystickButton(operatorController, XboxController.Button.kX.value);
-    gripperTest.whileTrue(new manualGripperClose(bident));
+    gripperTest.whileTrue(new AutoShoulder(arm));
 
     Trigger gripperTest2 = new JoystickButton(operatorController, XboxController.Button.kY.value);
-    gripperTest2.whileTrue(new manualGripperOpen(bident));
+    gripperTest2.whileTrue(new AutoShoulder2(arm));
 
 
   }

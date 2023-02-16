@@ -36,6 +36,8 @@ public class Arm extends SubsystemBase {
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
   private final CANSparkMax Elbow = new CANSparkMax(23, MotorType.kBrushless);
 
+  double ElbowPosition = 0.0;
+
   private TrapezoidProfile.State elbowSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State shoulderSetpoint = new TrapezoidProfile.State();
 
@@ -74,16 +76,16 @@ public class Arm extends SubsystemBase {
     Elbow.enableSoftLimit(SoftLimitDirection.kForward, true);
     Elbow.enableSoftLimit(SoftLimitDirection.kReverse, true);
     
-    kP = 0.00; 
+    kP = 0.1; 
     kI = 0.00;
     kD = 0; 
     kIz = 0; 
-    kFF = .0042;
+    kFF = 0;
     kMaxOutput = 1;
     kMinOutput = -1;
-    maxVel = 360/1; // rpm
-    maxAcc = 360.0;
-    
+    maxVel = 360; // rpm
+    maxAcc = 180;
+  
     elbowPIDController = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(maxVel, maxAcc));
     shoulderPIDController = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(maxVel, maxVel));
 
@@ -117,19 +119,9 @@ public class Arm extends SubsystemBase {
 
   public void setShoulderPosition(double position){
     shoulderGoal = new TrapezoidProfile.State(position, 0);
-
-    TrapezoidProfile profile = new TrapezoidProfile(shoulderProfileConstraints, shoulderGoal, shoulderSetpoint);
-    shoulderSetpoint = profile.calculate(0.02);
-
-    elbowPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, -.6*Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()))+(.0042*elbowSetpoint.velocity*12));
   }
   public void setElbowPosition(double position){
-    elbowGoal = new TrapezoidProfile.State(position, 0);
-
-    TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, shoulderSetpoint);
-    elbowSetpoint = profile.calculate(0.02);
-
-    elbowPID.setReference(elbowSetpoint.position, ControlType.kPosition, 0, .5*Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()))+(.0042*elbowSetpoint.velocity*12));
+    ElbowPosition = position;
   }
 
   public void resetElbow(){
@@ -149,7 +141,27 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shoulder_Angle", shoulCanCoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Elbow_Angle", elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition());
+
+    elbowGoal = new TrapezoidProfile.State(ElbowPosition, 0);
+
+    TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, elbowSetpoint);
+    elbowSetpoint = profile.calculate(0.02);
+
+    SmartDashboard.putNumber("SetpointPosition", elbowSetpoint.position);
+    SmartDashboard.putNumber("SetpointVelocity", elbowSetpoint.velocity);
+
+    double feedforward = .5*Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()));
+    feedforward += (elbowSetpoint.velocity * 0.0042) * 12.0;
+
+    elbowPID.setReference(elbowSetpoint.position, ControlType.kPosition, 0, feedforward);
+
+
+    // TrapezoidProfile shoulderProfile = new TrapezoidProfile(shoulderProfileConstraints, shoulderGoal, shoulderSetpoint);
+    // shoulderSetpoint = shoulderProfile.calculate(0.02);
+
+    // double Shoulderfeedforward = -.6*Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
+    // Shoulderfeedforward += (shoulderSetpoint.velocity * 0.0042) * 12.0;
+
+    // shoulderPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, Shoulderfeedforward);
   }
 }

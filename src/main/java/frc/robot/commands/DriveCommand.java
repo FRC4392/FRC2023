@@ -31,9 +31,9 @@ public class DriveCommand extends CommandBase {
   private JoystickHelper yrHelper = new JoystickHelper(0);
   private double driveFactor = 1;
   private PIDController rotationController = new PIDController(0.4,.0,.0);
-  private SlewRateLimiter xfilter = new SlewRateLimiter(1);
-  private SlewRateLimiter yfilter = new SlewRateLimiter(1);
-  private SlewRateLimiter rotfilter = new SlewRateLimiter(1);
+  private SlewRateLimiter xfilter = new SlewRateLimiter(2);
+  private SlewRateLimiter yfilter = new SlewRateLimiter(2);
+  private SlewRateLimiter rotfilter = new SlewRateLimiter(2);
 
   public DriveCommand(Drivetrain Drivetrain, XboxController XboxController) {
     mDrivetrain = Drivetrain;
@@ -109,14 +109,17 @@ public class DriveCommand extends CommandBase {
     }
     lastScan = mController.getRawButton(7);
 
-    boolean fieldRelative = !(mController.getRightTriggerAxis()>0);
+    //boolean fieldRelative = !(mController.getRightTriggerAxis()>0);
     //boolean fieldRelative = true;
 
-    if (fieldRelative){
-      mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
-    } else {
-      mDrivetrain.drive(yVel*-1, xVel*-1, rotVel, fieldRelative);
-    }
+    // if (fieldRelative){
+    //   mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
+    // } else {
+    //   mDrivetrain.drive(yVel*-1, xVel*-1, rotVel, fieldRelative);
+    // }
+
+    boolean fieldRelative = !mController.getAButton();
+    mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
 
     
 //  mDrivetrain.drive(yVel,xVel, rotVel, fieldRelative);

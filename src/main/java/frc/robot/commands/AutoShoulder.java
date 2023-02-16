@@ -19,19 +19,18 @@ public class AutoShoulder extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.resetShoulder();
+    //arm.resetShoulder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setShoulderPosition(-30);
+    arm.setShoulderPosition(10);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    arm.setShoulder(0);
   }
 
   // Returns true when the command should end.
