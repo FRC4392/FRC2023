@@ -19,13 +19,13 @@ public class AutoElbow2 extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //arm.resetElbow();
+    arm.resetElbow();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setElbowPosition(120.0);
+    arm.setElbowPosition(0.0);
   }
 
   // Called once the command ends or is interrupted.
@@ -36,6 +36,6 @@ public class AutoElbow2 extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(arm.getElbowPostition() - 0.0) < 10;
   }
 }

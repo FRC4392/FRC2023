@@ -4,42 +4,38 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.JoeBident;
+import frc.robot.subsystems.Arm;
 
-public class manualGripper3 extends CommandBase {
-  JoeBident gripper;
-  DoubleSupplier intake;
-  /** Creates a new manualGripper. */
-  public manualGripper3(JoeBident bident, DoubleSupplier intakeSpeed) {
+public class AutoShoulder3 extends CommandBase {
+  Arm arm;
+  /** Creates a new AutoElbow. */
+  public AutoShoulder3(Arm armInstance) {
+    arm = armInstance;
+    addRequirements(armInstance);
     // Use addRequirements() here to declare subsystem dependencies.
-    gripper = bident;
-    intake = intakeSpeed;
-    addRequirements(bident);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    arm.resetShoulder();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    gripper.setIntake(intake.getAsDouble());
-    gripper.setGripper(0);
+    arm.setShoulderPosition(-12);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(arm.getShoulderPostition() - -12) < 10;
   }
 }

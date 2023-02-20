@@ -19,13 +19,14 @@ public class AutoShoulder extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //arm.resetShoulder();
+    arm.resetShoulder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setShoulderPosition(10);
+  
+    arm.setShoulderPosition(37.0);
   }
 
   // Called once the command ends or is interrupted.
@@ -36,6 +37,6 @@ public class AutoShoulder extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(arm.getShoulderPostition() - 37.0) < 10;
   }
 }

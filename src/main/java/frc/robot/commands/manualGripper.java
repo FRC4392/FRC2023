@@ -17,6 +17,7 @@ public class manualGripper extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     gripper = bident;
     intake = intakeSpeed;
+    addRequirements(bident);
   }
 
   // Called when the command is initially scheduled.
