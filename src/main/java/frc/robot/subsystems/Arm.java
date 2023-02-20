@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -12,7 +13,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -27,11 +27,9 @@ public class Arm extends SubsystemBase {
   private final CANCoder elbowCanCoder = new CANCoder(22);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final ProfiledPIDController elbowPIDController;
-  private final ProfiledPIDController shoulderPIDController;
   private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 180);
   private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360);
-  private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxVel, maxAcc;
+  private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
   private final CANSparkMax Elbow = new CANSparkMax(23, MotorType.kBrushless);
@@ -83,11 +81,6 @@ public class Arm extends SubsystemBase {
     kFF = 0;
     kMaxOutput = 1;
     kMinOutput = -1;
-    maxVel = 360; // rpm
-    maxAcc = 360;
-  
-    elbowPIDController = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(maxVel, maxAcc));
-    shoulderPIDController = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(maxVel, maxVel));
 
     elbowPID.setP(kP);
     elbowPID.setI(kI);

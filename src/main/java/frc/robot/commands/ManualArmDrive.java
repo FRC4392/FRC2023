@@ -16,9 +16,6 @@ public class ManualArmDrive extends CommandBase {
 
   private JoystickHelper xHelper = new JoystickHelper(0);
   private JoystickHelper yHelper = new JoystickHelper(0);
-  private JoystickHelper rotHelper = new JoystickHelper(0);
-  private JoystickHelper xrHelper = new JoystickHelper(0);
-  private JoystickHelper yrHelper = new JoystickHelper(0);
   /** Creates a new ManualArmDrive. */
   public ManualArmDrive(Arm arm, XboxController controller) {
     robotArm = arm;
