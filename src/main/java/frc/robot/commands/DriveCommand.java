@@ -80,12 +80,12 @@ public class DriveCommand extends CommandBase {
     }
 
     rotVel = mController.getRightTriggerAxis() - mController.getLeftTriggerAxis();
-    yVel = yHelper.setInput(yVel).applyDeadband(0.1).value;
-    xVel = xHelper.setInput(xVel).applyDeadband(0.1).value;
-    rotVel = rotHelper.setInput(rotVel).applyDeadband(0.1).value;
+    yVel = yHelper.setInput(yVel).applyPower(2).value;
+    xVel = xHelper.setInput(xVel).applyPower(2).value;
+    rotVel = rotHelper.setInput(rotVel).applyPower(2).value;
 
-    yrVel = yrHelper.setInput(yrVel).applyDeadband(0.1).value;
-    xrVel = xrHelper.setInput(xrVel).applyDeadband(0.1).value;
+    yrVel = yrHelper.setInput(yrVel).applyPower(yrVel).value;
+    xrVel = xrHelper.setInput(xrVel).applyPower(yrVel).value;
     
     yVel = yVel*driveFactor;
     xVel = xVel*driveFactor;
