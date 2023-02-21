@@ -11,13 +11,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AutoElbow;
-import frc.robot.commands.AutoElbow2;
 import frc.robot.commands.AutoElbow3;
-import frc.robot.commands.AutoShoulder;
-import frc.robot.commands.AutoShoulder2;
 import frc.robot.commands.AutoShoulder3;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.manualGripper;
@@ -37,7 +34,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   XboxController driverController = new XboxController(0);
-  XboxController operatorController = new XboxController(1);
+  CommandXboxController operatorController = new CommandXboxController(1);
 
   Drivetrain drivetrain = new Drivetrain();
   Arm arm = new Arm();
@@ -136,29 +133,29 @@ public class Robot extends TimedRobot {
   }
 
   private void configureBindings() {
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+    Trigger CubeTrigger = operatorController.povLeft();
+    Trigger highGoalConeTrigger = operatorController.y().and(CubeTrigger.negate());
+    Trigger highGoalCubeTrigger = operatorController.y().and(CubeTrigger);
+    Trigger MidGoalConeTrigger = operatorController.x().and(CubeTrigger.negate());
+    Trigger MidGoalCubeTrigger = operatorController.x().and(CubeTrigger);
 
-    Trigger neutralTrigger = new JoystickButton(operatorController, XboxController.Button.kB.value);
-    neutralTrigger.onTrue(new SequentialCommandGroup(new AutoShoulder2(arm), new AutoElbow2(arm)));
-    
-    Trigger midGoalTrigger = new JoystickButton(operatorController, XboxController.Button.kX.value);
-    midGoalTrigger.onTrue(new SequentialCommandGroup(new AutoElbow(arm), new AutoShoulder(arm)));
+    Trigger shelfTrigger = operatorController.a().and(CubeTrigger.negate());
+    Trigger shelfTriggerBackwards = operatorController.a().and(CubeTrigger);
 
-    Trigger shelfTrigger = new JoystickButton(operatorController, XboxController.Button.kY.value);
-    shelfTrigger.onTrue(new SequentialCommandGroup(new AutoElbow3(arm), new AutoShoulder3(arm)));
+    operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(130.0).andThen(arm.shoulderPositionCommand(37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(90).andThen(arm.shoulderPositionCommand(17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(84).andThen(arm.shoulderPositionCommand(14)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(66).andThen(arm.shoulderPositionCommand(0)));
+
+
+    shelfTrigger.onTrue(arm.shoulderPositionCommand(-12.0).andThen(arm.elbowPositionCommand(95)));
+    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(12).andThen(arm.elbowPositionCommand(-95)));
 
     DoubleSupplier intakeSpeed = () -> operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis();
 
 
     bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
-
-
-    Trigger elbowTest = new JoystickButton(operatorController, XboxController.Button.kRightBumper.value);
-    elbowTest.whileTrue(new manualGripper(bident, intakeSpeed));
-
-    Trigger shoulderTest = new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value);
-    shoulderTest.whileTrue(new manualGripper2(bident, intakeSpeed));
-
-
+    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
   }
 }

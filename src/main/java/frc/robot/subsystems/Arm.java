@@ -17,10 +17,15 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
 
+  /**
+   *
+   */
+  private static final double dt = 0.02;
   private final RelativeEncoder shoulder1Encoder;
   private final RelativeEncoder elbowEncoder;
   private final CANCoder shoulCanCoder = new CANCoder(21);
@@ -39,8 +44,8 @@ public class Arm extends SubsystemBase {
   private TrapezoidProfile.State elbowSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State shoulderSetpoint = new TrapezoidProfile.State();
 
-  private TrapezoidProfile.State elbowGoal = new TrapezoidProfile.State(0,0);
-  private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State(0,0);
+  private TrapezoidProfile.State elbowGoal = new TrapezoidProfile.State(0, 0);
+  private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State(0, 0);
 
   /** Creates a new Arm. */
   public Arm() {
@@ -59,10 +64,10 @@ public class Arm extends SubsystemBase {
     Shoulder1.setInverted(true);
     Shoulder2.setInverted(true);
 
-    shoulder1Encoder.setPositionConversionFactor(360.0/98.38556505223172);
-    elbowEncoder.setPositionConversionFactor(360.0/98.38556505223172);
-    shoulder1Encoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
-    elbowEncoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
+    shoulder1Encoder.setPositionConversionFactor(360.0 / 98.38556505223172);
+    elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
+    shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
+    elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
@@ -73,11 +78,11 @@ public class Arm extends SubsystemBase {
     Elbow.setSoftLimit(SoftLimitDirection.kReverse, -180);
     Elbow.enableSoftLimit(SoftLimitDirection.kForward, true);
     Elbow.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    
-    kP = 0.1; 
+
+    kP = 0.1;
     kI = 0.00;
-    kD = 0.00; 
-    kIz = 0; 
+    kD = 0.00;
+    kIz = 0;
     kFF = 0;
     kMaxOutput = 1;
     kMinOutput = -1;
@@ -97,77 +102,107 @@ public class Arm extends SubsystemBase {
     shoulderPID.setOutputRange(kMinOutput, kMaxOutput);
 
     Shoulder2.follow(Shoulder1);
+    
     setZero();
   }
 
-  public void setShoulder(double Velocity){
-    double kFFArb = -.6*Math.sin(Units.degreesToRadians(shoulCanCoder.getAbsolutePosition()));
-    Shoulder1.setVoltage(((Velocity*12)*.3)+kFFArb);
+  public void setShoulder(double Velocity) {
+    Shoulder1.setVoltage(((Velocity * 12) * .3) + getShoulderGravityFeedForward());
   }
 
-  public void setElbow(double Velocity){
-    double kFFArb = .5*Math.sin(Units.degreesToRadians(elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition()));
-    Elbow.setVoltage(((Velocity*12)*.3)+kFFArb);
+  public void setElbow(double Velocity) {
+    Elbow.setVoltage(((Velocity * 12) * .3) + getElbowGravityFeedForward());
   }
 
-  public void setShoulderPosition(double position){
+  public void setShoulderPosition(double position) {
     shoulderGoal = new TrapezoidProfile.State(position, 0);
   }
-  public void setElbowPosition(double position){
-    ElbowPosition = position;
+
+  public void setElbowPosition(double position) {
+    elbowGoal = new TrapezoidProfile.State(position, 0);
   }
 
-  public void resetElbow(){
+  public void resetElbowProfile() {
     elbowSetpoint = new TrapezoidProfile.State(elbowEncoder.getPosition(), 0);
   }
 
-  public void resetShoulder(){
+  public void resetShoulderProfile() {
     shoulderSetpoint = new TrapezoidProfile.State(shoulder1Encoder.getPosition(), 0);
   }
 
- public void setZero(){
-  shoulder1Encoder.setPosition(shoulCanCoder.getAbsolutePosition());
-  elbowEncoder.setPosition(elbowCanCoder.getAbsolutePosition()-shoulCanCoder.getAbsolutePosition());
- }
+  public void setZero() {
+    shoulder1Encoder.setPosition(shoulCanCoder.getAbsolutePosition());
+    elbowEncoder.setPosition(elbowCanCoder.getAbsolutePosition() - shoulCanCoder.getAbsolutePosition());
+  }
 
- public double getElbowPostition(){
-  return elbowEncoder.getPosition();
- }
+  public double getElbowPostition() {
+    return elbowEncoder.getPosition();
+  }
 
- public double getShoulderPostition(){
-  return shoulder1Encoder.getPosition();
- }
+  public double getShoulderPostition() {
+    return shoulder1Encoder.getPosition();
+  }
 
- 
+  public boolean elbowInPostion(){
+    return true;
+  }
+  public boolean shoulderInPostion(){
+    return true;
+  }
+
+  public Command elbowPositionCommand(double position){
+    return this.run(() -> setElbowPosition(position)).until(() -> elbowInPostion());
+  }
+
+  public Command shoulderPositionCommand(double position){
+    return this.run(() -> setShoulderPosition(position)).until(() -> shoulderInPostion());
+  }
+
+  private void log(){
+    SmartDashboard.putNumber("Shoulder Absolute position", shoulCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Shoulder Inremental position", shoulder1Encoder.getPosition());
+    SmartDashboard.putNumber("shoulder setpoint", shoulderSetpoint.position);
+    SmartDashboard.putNumber("elbow setpoint", elbowSetpoint.position);
+    SmartDashboard.putNumber("Elboe Absolute position", elbowCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Elboe Inremental position", elbowEncoder.getPosition());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
-    elbowGoal = new TrapezoidProfile.State(ElbowPosition, 0);
-
     TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, elbowSetpoint);
-    elbowSetpoint = profile.calculate(0.02);
+    elbowSetpoint = profile.calculate(dt);
 
-        SmartDashboard.putNumber("Shoulder Absolute position", shoulder1Encoder.getPosition());
-    SmartDashboard.putNumber("Shoulder Inremental position", shoulCanCoder.getAbsolutePosition());
-    SmartDashboard.putNumber("shoulder setpoint", shoulderSetpoint.position);
-    SmartDashboard.putNumber("elbow setpoint", elbowSetpoint.position);
+    double elbowFeedForward = getElbowGravityFeedForward() + getElbowVelocityFeedForward(elbowSetpoint.velocity);
 
-    SmartDashboard.putNumber("Elboe Absolute position", elbowEncoder.getPosition());
-    SmartDashboard.putNumber("Elboe Inremental position", elbowCanCoder.getAbsolutePosition());
-
-    double feedforward = .5*Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()));
-    feedforward += (elbowSetpoint.velocity * 0.0042) * 12.0;
-
-    elbowPID.setReference(elbowSetpoint.position, ControlType.kPosition, 0, feedforward);
-
+    elbowPID.setReference(elbowSetpoint.position, ControlType.kPosition, 0, elbowFeedForward);
 
     TrapezoidProfile shoulderProfile = new TrapezoidProfile(shoulderProfileConstraints, shoulderGoal, shoulderSetpoint);
-    shoulderSetpoint = shoulderProfile.calculate(0.02);
+    shoulderSetpoint = shoulderProfile.calculate(dt);
 
-    double Shoulderfeedforward = -.6*Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
-    //Shoulderfeedforward += (shoulderSetpoint.velocity * 0.0042) * 12.0;
+    double Shoulderfeedforward = getShoulderGravityFeedForward() + getShoulderVelocityFeedForward(shoulderSetpoint.velocity);
 
     shoulderPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, Shoulderfeedforward);
+
+    log();
+  }
+
+  private double getShoulderVelocityFeedForward(double velocity) {
+    return (velocity * 0.0042) * 12.0;
+  }
+
+  private double getShoulderGravityFeedForward() {
+    double Shoulderfeedforward = -.6 * Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
+    return Shoulderfeedforward;
+  }
+
+  private double getElbowVelocityFeedForward(double velocity) {
+    return (velocity * 0.0042) * 12.0;
+  }
+
+  private double getElbowGravityFeedForward() {
+    double Shoulderfeedforward = .5 * Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
+    return Shoulderfeedforward;
   }
 }
