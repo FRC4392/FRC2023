@@ -10,12 +10,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AutoElbow3;
-import frc.robot.commands.AutoShoulder3;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.manualGripper;
 import frc.robot.commands.manualGripper2;
@@ -156,6 +152,8 @@ public class Robot extends TimedRobot {
 
 
     bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
+    operatorController.leftBumper().onTrue(new manualGripper(bident, intakeSpeed));
+    operatorController.rightBumper().onTrue(new manualGripper2(bident, intakeSpeed));
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
   }
 }
