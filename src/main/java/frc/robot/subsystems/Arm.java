@@ -59,10 +59,10 @@ public class Arm extends SubsystemBase {
     Shoulder1.setInverted(true);
     Shoulder2.setInverted(true);
 
-    shoulder1Encoder.setPositionConversionFactor(360.0/104.93);
-    elbowEncoder.setPositionConversionFactor(360.0/104.93);
-    shoulder1Encoder.setVelocityConversionFactor((360.0/104.93)/60);
-    elbowEncoder.setVelocityConversionFactor((360.0/104.93)/60);
+    shoulder1Encoder.setPositionConversionFactor(360.0/98.38556505223172);
+    elbowEncoder.setPositionConversionFactor(360.0/98.38556505223172);
+    shoulder1Encoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
+    elbowEncoder.setVelocityConversionFactor((360.0/98.38556505223172)/60);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
