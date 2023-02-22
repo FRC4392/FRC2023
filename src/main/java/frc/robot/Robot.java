@@ -139,14 +139,14 @@ public class Robot extends TimedRobot {
     Trigger shelfTriggerBackwards = operatorController.a().and(CubeTrigger);
 
     operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(130.0).andThen(arm.shoulderPositionCommand(37.0)));
-    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(90).andThen(arm.shoulderPositionCommand(17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(84).andThen(arm.shoulderPositionCommand(14)));
-    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(66).andThen(arm.shoulderPositionCommand(0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-90).andThen(arm.shoulderPositionCommand(-17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-84).andThen(arm.shoulderPositionCommand(-14)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-66).andThen(arm.shoulderPositionCommand(0)));
 
 
-    shelfTrigger.onTrue(arm.shoulderPositionCommand(-12.0).andThen(arm.elbowPositionCommand(95)));
-    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(12).andThen(arm.elbowPositionCommand(-95)));
+    shelfTrigger.onTrue(arm.shoulderPositionCommand(12.0).andThen(arm.elbowPositionCommand(-95)));
+    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(-12).andThen(arm.elbowPositionCommand(95)));
 
     DoubleSupplier intakeSpeed = () -> operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis();
 
