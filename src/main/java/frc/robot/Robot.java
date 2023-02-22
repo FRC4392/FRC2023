@@ -152,8 +152,8 @@ public class Robot extends TimedRobot {
 
 
     bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
-    operatorController.leftBumper().onTrue(new manualGripper(bident, intakeSpeed));
-    operatorController.rightBumper().onTrue(new manualGripper2(bident, intakeSpeed));
+    operatorController.leftBumper().whileTrue(new manualGripper(bident, intakeSpeed));
+    operatorController.rightBumper().whileTrue(new manualGripper2(bident, intakeSpeed));
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
   }
 }
