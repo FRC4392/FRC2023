@@ -141,12 +141,12 @@ public class Robot extends TimedRobot {
     operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(130.0).andThen(arm.shoulderPositionCommand(37.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(100).andThen(arm.shoulderPositionCommand(17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(90).andThen(arm.shoulderPositionCommand(14)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(100).andThen(arm.shoulderPositionCommand(14)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(75).andThen(arm.shoulderPositionCommand(0)));
 
 
-    shelfTrigger.onTrue(arm.shoulderPositionCommand(12.0).andThen(arm.elbowPositionCommand(-100)));
-    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(-12).andThen(arm.elbowPositionCommand(100)));
+    shelfTrigger.onTrue(arm.shoulderPositionCommand(12.0).andThen(arm.elbowPositionCommand(-97)));
+    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(-12).andThen(arm.elbowPositionCommand(97)));
 
     DoubleSupplier intakeSpeed = () -> operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis();
 
