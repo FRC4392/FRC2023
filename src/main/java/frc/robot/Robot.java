@@ -18,7 +18,10 @@ import frc.robot.commands.manualGripper2;
 import frc.robot.commands.manualGripper3;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.JoeBident;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -35,6 +38,9 @@ public class Robot extends TimedRobot {
   Drivetrain drivetrain = new Drivetrain();
   Arm arm = new Arm();
   JoeBident bident = new JoeBident();
+  Intake intake = new Intake();
+  Limelight limelight = new Limelight();
+  LED led = new LED();
 
   
   /**
@@ -139,14 +145,14 @@ public class Robot extends TimedRobot {
     Trigger shelfTriggerBackwards = operatorController.a().and(CubeTrigger);
 
     operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(130.0).andThen(arm.shoulderPositionCommand(37.0)));
-    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(100).andThen(arm.shoulderPositionCommand(17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(100).andThen(arm.shoulderPositionCommand(14)));
-    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(75).andThen(arm.shoulderPositionCommand(0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-14)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-75).andThen(arm.shoulderPositionCommand(0)));
 
 
     shelfTrigger.onTrue(arm.shoulderPositionCommand(12.0).andThen(arm.elbowPositionCommand(-97)));
-    shelfTriggerBackwards.onTrue(arm.shoulderPositionCommand(-12).andThen(arm.elbowPositionCommand(97)));
+    shelfTriggerBackwards.onTrue(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(18)));
 
     DoubleSupplier intakeSpeed = () -> operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis();
 

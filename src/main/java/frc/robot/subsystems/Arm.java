@@ -32,8 +32,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder elbowCanCoder = new CANCoder(22);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 180);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360);
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*1.5);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
@@ -144,10 +144,10 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean elbowInPostion(){
-    return true;
+    return Math.abs(elbowGoal.position - elbowSetpoint.position) < 3;
   }
   public boolean shoulderInPostion(){
-    return true;
+    return Math.abs(shoulderGoal.position - shoulderSetpoint.position) < 3;
   }
 
   public Command elbowPositionCommand(double position){
