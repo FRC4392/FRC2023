@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
+import com.ctre.phoenix.CANifier.LEDChannel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -20,6 +23,7 @@ public class JoeBident extends SubsystemBase {
   //intake1
   CANSparkMax JillBident = new CANSparkMax(32, MotorType.kBrushless);
   //intake2
+  CANifier remoteIO = new CANifier(30);
 
 
   public JoeBident() {
@@ -32,6 +36,10 @@ public class JoeBident extends SubsystemBase {
     
     CamellaHarris.setSmartCurrentLimit(15);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
+
+    remoteIO.setLEDOutput(255, LEDChannel.LEDChannelB);
+
+    remoteIO.getGeneralInput(GeneralPin.QUAD_A);
   }
   public void setIntake(double velocity){
     HunterBident.set(velocity);
@@ -42,8 +50,37 @@ public class JoeBident extends SubsystemBase {
     SmartDashboard.putNumber("gripperCurrent", CamellaHarris.getOutputCurrent());
   }
 
+  public boolean getGripperProx(){
+    return remoteIO.getGeneralInput(GeneralPin.QUAD_A);
+  }
+
+  public boolean getGripperOccupied(){
+    return remoteIO.getGeneralInput(GeneralPin.QUAD_B);
+  }
+
+  public boolean getIsGamePieceCube(){
+    return remoteIO.getGeneralInput(GeneralPin.QUAD_IDX);
+  }
+
+  public boolean getIsGamePieceCone(){
+    return remoteIO.getGeneralInput(GeneralPin.LIMF);
+  }
+
+  public void setLEDColor(double R, double G, double B){
+    remoteIO.setLEDOutput(G, LEDChannel.LEDChannelA);
+    remoteIO.setLEDOutput(B, LEDChannel.LEDChannelB);
+    remoteIO.setLEDOutput(R, LEDChannel.LEDChannelC);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (getIsGamePieceCone()){
+      setLEDColor(1, 1, 0);
+    } else if (getIsGamePieceCube()){
+      setLEDColor(.5, 0, .5);
+    } else {
+      setLEDColor(0, 0, 1);
+    }
   }
 }
