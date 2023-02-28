@@ -9,9 +9,11 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.CANifier.LEDChannel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class JoeBident extends SubsystemBase {
@@ -34,12 +36,11 @@ public class JoeBident extends SubsystemBase {
     JillBident.setSmartCurrentLimit(25);
     JillBident.setIdleMode(IdleMode.kBrake);
     
-    CamellaHarris.setSmartCurrentLimit(15);
+    CamellaHarris.setSmartCurrentLimit(10);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
+    CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-    remoteIO.setLEDOutput(255, LEDChannel.LEDChannelB);
-
-    remoteIO.getGeneralInput(GeneralPin.QUAD_A);
   }
   public void setIntake(double velocity){
     HunterBident.set(velocity);
@@ -70,6 +71,56 @@ public class JoeBident extends SubsystemBase {
     remoteIO.setLEDOutput(G, LEDChannel.LEDChannelA);
     remoteIO.setLEDOutput(B, LEDChannel.LEDChannelB);
     remoteIO.setLEDOutput(R, LEDChannel.LEDChannelC);
+  }
+
+  public void stop(){
+    setIntake(0);
+    setGripper(0);
+  }
+
+  public Command autoGrabCommand(double speed){
+    return this.runEnd(
+      () -> {
+        if (getGripperProx()){
+          setGripper(.1);
+        } else {
+          setGripper(0);
+        }
+
+        if(getGripperOccupied()){
+          setIntake(speed * .25);
+        } else {
+          setIntake(speed);
+        }
+      }, 
+      () -> {
+        if (getGripperOccupied() || getGripperProx()){
+          setIntake(.1);
+          setGripper(.1);
+        } else {
+          setIntake(0);
+          setGripper(0);
+        }
+      });
+  }
+
+  public Command ejectWhileOpeningCommand(double speed){
+    return this.runEnd(() -> {
+      setGripper(-.1);
+      setIntake(speed);
+    }, () -> stop());
+  }
+
+  public Command ejectWithoutOpeningCommand(double speed){
+    return this.runEnd(() -> {
+      setIntake(speed);
+    }, () -> stop());
+  }
+
+  public Command openCommand(double speed){
+    return this.runEnd(() -> {
+      setGripper(-.1);
+    }, () -> stop());
   }
 
   @Override
