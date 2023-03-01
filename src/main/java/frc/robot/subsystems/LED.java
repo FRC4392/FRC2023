@@ -145,4 +145,21 @@ public class LED extends SubsystemBase {
     // Check bounds
     m_rainbowFirstPixelHue %= 180;
   }
+
+  private void setLedCube() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Sets the specified LED to the RGB values for red
+      m_ledBuffer.setRGB(i, 255, 0, 255);
+   }
+   
+   m_led.setData(m_ledBuffer);
+  }
+
+  private void setLedCone() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Sets the specified LED to the RGB values for red
+      m_ledBuffer.setRGB(i, 255, 255, 0);
+   }
+   
+   m_led.setData(m_ledBuffer);
 }
