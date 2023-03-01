@@ -167,11 +167,11 @@ public class SwerveModuleV3 implements SwerveModule {
         //     setpoint = 360 - Math.abs(setpoint);
         // }
 
-        SmartDashboard.putNumber(mName + "radian setpoint", optimizedState.angle.getRadians());
-        SmartDashboard.putNumber(mName + " Given Setpoint", setpoint);
-        SmartDashboard.putNumber(mName + "Current Location", mAzimuthAbsoluteEncoder.getPosition());
+        // SmartDashboard.putNumber(mName + "radian setpoint", optimizedState.angle.getRadians());
+        // SmartDashboard.putNumber(mName + " Given Setpoint", setpoint);
+        // SmartDashboard.putNumber(mName + "Current Location", mAzimuthAbsoluteEncoder.getPosition());
         double velocity = optimizedState.speedMetersPerSecond;
-        SmartDashboard.putNumber(mName + " Given Velocity", velocity);
+        // SmartDashboard.putNumber(mName + " Given Velocity", velocity);
 
         // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
         mAzimuthPID.setReference(setpoint, ControlType.kPosition);

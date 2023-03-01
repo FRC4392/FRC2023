@@ -32,8 +32,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder elbowCanCoder = new CANCoder(22);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*1.5);
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 180);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*2);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
@@ -144,27 +144,33 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean elbowInPostion(){
-    return Math.abs(elbowGoal.position - elbowSetpoint.position) < 3;
+    return Math.abs(elbowSetpoint.position - elbowGoal.position) < 3;
   }
   public boolean shoulderInPostion(){
-    return Math.abs(shoulderGoal.position - shoulderSetpoint.position) < 3;
+    return Math.abs(shoulderSetpoint.position - shoulderGoal.position) < 3;
+  }
+
+  public void doNothing(){
+
   }
 
   public Command elbowPositionCommand(double position){
-    return this.run(() -> setElbowPosition(position)).until(() -> elbowInPostion());
+    return this.startEnd(() -> setElbowPosition(position), ()-> doNothing()).until(() -> elbowInPostion());
   }
 
   public Command shoulderPositionCommand(double position){
-    return this.run(() -> setShoulderPosition(position)).until(() -> shoulderInPostion());
+    return this.startEnd(() -> setShoulderPosition(position), () ->doNothing()).until(() -> shoulderInPostion());
   }
 
   private void log(){
-    SmartDashboard.putNumber("Shoulder Absolute position", shoulCanCoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Shoulder Inremental position", shoulder1Encoder.getPosition());
-    SmartDashboard.putNumber("shoulder setpoint", shoulderSetpoint.position);
-    SmartDashboard.putNumber("elbow setpoint", elbowSetpoint.position);
-    SmartDashboard.putNumber("Elboe Absolute position", elbowCanCoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Elboe Inremental position", elbowEncoder.getPosition());
+    // SmartDashboard.putNumber("Shoulder Absolute position", shoulCanCoder.getAbsolutePosition());
+    // SmartDashboard.putNumber("Shoulder Inremental position", shoulder1Encoder.getPosition());
+    // SmartDashboard.putNumber("shoulder setpoint", shoulderSetpoint.position);
+    // SmartDashboard.putNumber("elbow setpoint", elbowSetpoint.position);
+    // SmartDashboard.putNumber("elbow goal", elbowGoal.position);
+    // SmartDashboard.putNumber("InPosition", Math.abs(shoulderGoal.position - shoulderSetpoint.position));
+    // SmartDashboard.putNumber("Elboe Absolute position", elbowCanCoder.getAbsolutePosition());
+    // SmartDashboard.putNumber("Elboe Inremental position", elbowEncoder.getPosition());
   }
 
   @Override

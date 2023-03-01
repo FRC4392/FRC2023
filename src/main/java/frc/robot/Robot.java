@@ -151,15 +151,21 @@ public class Robot extends TimedRobot {
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-75).andThen(arm.shoulderPositionCommand(0)));
 
 
-    shelfTrigger.onTrue(arm.shoulderPositionCommand(12.0).andThen(arm.elbowPositionCommand(-97)));
+    shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
     shelfTriggerBackwards.onTrue(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(18)));
 
-    DoubleSupplier intakeSpeed = () -> operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis();
+    DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
 
+    operatorController.leftStick().onTrue(intake.getIntakePivotCommand(100));
+    operatorController.rightStick().onTrue(intake.getIntakePivotCommand(0));
 
-    bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
-    operatorController.leftBumper().whileTrue(new manualGripper(bident, intakeSpeed));
-    operatorController.rightBumper().whileTrue(new manualGripper2(bident, intakeSpeed));
+    // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
+
+    operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed));
+    operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
+
+    operatorController.leftBumper().whileTrue(bident.closeCommand());
+    operatorController.rightBumper().whileTrue(bident.openCommand());
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
   }
 }

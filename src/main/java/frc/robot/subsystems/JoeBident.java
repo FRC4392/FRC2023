@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.CANifier.LEDChannel;
@@ -29,6 +31,7 @@ public class JoeBident extends SubsystemBase {
 
 
   public JoeBident() {
+    HunterBident.setInverted(true);
     JillBident.follow(HunterBident, true);
 
     HunterBident.setSmartCurrentLimit(25);
@@ -40,6 +43,7 @@ public class JoeBident extends SubsystemBase {
     CamellaHarris.setIdleMode(IdleMode.kBrake);
     CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
     CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    CamellaHarris.setInverted(true);
 
   }
   public void setIntake(double velocity){
@@ -52,7 +56,7 @@ public class JoeBident extends SubsystemBase {
   }
 
   public boolean getGripperProx(){
-    return remoteIO.getGeneralInput(GeneralPin.QUAD_A);
+    return !remoteIO.getGeneralInput(GeneralPin.QUAD_A);
   }
 
   public boolean getGripperOccupied(){
@@ -60,7 +64,7 @@ public class JoeBident extends SubsystemBase {
   }
 
   public boolean getIsGamePieceCube(){
-    return remoteIO.getGeneralInput(GeneralPin.QUAD_IDX);
+    return false;//remoteIO.getGeneralInput(GeneralPin.QUAD_IDX);
   }
 
   public boolean getIsGamePieceCone(){
@@ -69,8 +73,8 @@ public class JoeBident extends SubsystemBase {
 
   public void setLEDColor(double R, double G, double B){
     remoteIO.setLEDOutput(G, LEDChannel.LEDChannelA);
-    remoteIO.setLEDOutput(B, LEDChannel.LEDChannelB);
-    remoteIO.setLEDOutput(R, LEDChannel.LEDChannelC);
+    remoteIO.setLEDOutput(B, LEDChannel.LEDChannelC);
+    remoteIO.setLEDOutput(R, LEDChannel.LEDChannelB);
   }
 
   public void stop(){
@@ -78,19 +82,19 @@ public class JoeBident extends SubsystemBase {
     setGripper(0);
   }
 
-  public Command autoGrabCommand(double speed){
+  public Command autoGrabCommand(DoubleSupplier speed){
     return this.runEnd(
       () -> {
         if (getGripperProx()){
-          setGripper(.1);
+          setGripper(.5);
         } else {
           setGripper(0);
         }
 
         if(getGripperOccupied()){
-          setIntake(speed * .25);
+          setIntake(speed.getAsDouble() * .25);
         } else {
-          setIntake(speed);
+          setIntake(speed.getAsDouble());
         }
       }, 
       () -> {
@@ -104,29 +108,35 @@ public class JoeBident extends SubsystemBase {
       });
   }
 
-  public Command ejectWhileOpeningCommand(double speed){
+  public Command ejectWhileOpeningCommand(DoubleSupplier speed){
     return this.runEnd(() -> {
       setGripper(-.1);
-      setIntake(speed);
+      setIntake(speed.getAsDouble());
     }, () -> stop());
   }
 
-  public Command ejectWithoutOpeningCommand(double speed){
+  public Command ejectWithoutOpeningCommand(DoubleSupplier speed){
     return this.runEnd(() -> {
-      setIntake(speed);
+      setIntake(speed.getAsDouble());
     }, () -> stop());
   }
 
-  public Command openCommand(double speed){
+  public Command openCommand(){
     return this.runEnd(() -> {
-      setGripper(-.1);
+      setGripper(-.5);
+    }, () -> stop());
+  }
+
+  public Command closeCommand(){
+    return this.runEnd(() -> {
+      setGripper(.5);
     }, () -> stop());
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (getIsGamePieceCone()){
+    if (getGripperOccupied()){
       setLEDColor(1, 1, 0);
     } else if (getIsGamePieceCube()){
       setLEDColor(.5, 0, .5);

@@ -31,9 +31,9 @@ public class DriveCommand extends CommandBase {
   private JoystickHelper yrHelper = new JoystickHelper(0);
   private double driveFactor = 1;
   private PIDController rotationController = new PIDController(0.4,.0,.0);
-  private SlewRateLimiter xfilter = new SlewRateLimiter(2);
-  private SlewRateLimiter yfilter = new SlewRateLimiter(2);
-  private SlewRateLimiter rotfilter = new SlewRateLimiter(2);
+  private SlewRateLimiter xfilter = new SlewRateLimiter(3);
+  private SlewRateLimiter yfilter = new SlewRateLimiter(3);
+  private SlewRateLimiter rotfilter = new SlewRateLimiter(3);
 
   public DriveCommand(Drivetrain Drivetrain, XboxController XboxController) {
     mDrivetrain = Drivetrain;
@@ -92,9 +92,12 @@ public class DriveCommand extends CommandBase {
     rotVel = rotVel*driveFactor;
 
     Rotation2d joystickAngle = Rotation2d.fromRadians(Math.atan2(-mController.getRightX(), -mController.getRightY()));
-    SmartDashboard.putNumber("joystickAngle", joystickAngle.getDegrees());
+    if (!mController.getLeftBumper()){
+      joystickAngle = joystickAngle.plus(new Rotation2d().fromDegrees(180));
+    }
+    // SmartDashboard.putNumber("joystickAngle", joystickAngle.getDegrees());
     double joystickMagnitude = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));
-    SmartDashboard.putNumber("joystickMagnitude", joystickMagnitude);
+    // SmartDashboard.putNumber("joystickMagnitude", joystickMagnitude);
      if (joystickMagnitude > .1){
        rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), joystickAngle.getRadians());
       if (Math.abs(rotVel) > joystickMagnitude){

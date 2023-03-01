@@ -155,8 +155,8 @@ public class SwerveDrive {
     }
 
     public void log(){
-        Arrays.stream(mModules).forEach(SwerveModule::log);
-        double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};
-        swervePose.set(swervePoseArray);
+        // Arrays.stream(mModules).forEach(SwerveModule::log);
+        // double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};
+        // swervePose.set(swervePoseArray);
     }
 }
