@@ -77,7 +77,7 @@ public class SwerveModuleV3 implements SwerveModule {
         mAzimuthIncrementalEncoder.setPositionConversionFactor(360.0 / 35.94);
 
         // Configure drive PID
-        mDrivePID.setFF(.1);
+        mDrivePID.setFF(.3);
         mDrivePID.setP(.1);
 
         // Configure azimuth PID
@@ -99,7 +99,8 @@ public class SwerveModuleV3 implements SwerveModule {
 
     // Sets the rotation speed of the azimuth motor in open loop mode
     public void setRotation(double rotation) {
-        mAzimuthMotor.set(rotation);
+        mAzimuthAbsoluteEncoder.getPosition();
+        //mAzimuthMotor.set(rotation);
     }
 
     // Gets the speed of the drive motor
@@ -191,8 +192,8 @@ public class SwerveModuleV3 implements SwerveModule {
         double velocity = optimizedState.speedMetersPerSecond;
 
         // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
-        mAzimuthPID.setReference(drive.angle.getDegrees(), ControlType.kPosition);
-        mDrivePID.setReference(drive.speedMetersPerSecond, ControlType.kVelocity);
+        mAzimuthPID.setReference(setpoint, ControlType.kPosition);
+        mDrivePID.setReference(velocity, ControlType.kVelocity);
     }
 
     // Stop all motors
