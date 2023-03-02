@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
@@ -74,7 +73,7 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
       mSwerveDrive.updateOdometry();
-      // mSwerveDrive.log();
+      mSwerveDrive.log();
       // SmartDashboard.putNumber("GyroAbs", pidgey.getFusedHeading());
     }
   

@@ -14,6 +14,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -133,15 +135,33 @@ public class JoeBident extends SubsystemBase {
     }, () -> stop());
   }
 
+  public void setCone(){
+    setLEDColor(.5, .5, 0);
+  }
+
+  public void setCube(){
+    setLEDColor(.5, 0, .5);
+  }
+
+  public void setNeutral(){
+    if (DriverStation.getAlliance() == Alliance.Blue){
+    setLEDColor(0, 0, 1);
+    } else {
+      setLEDColor(1, 0, 0);
+    }
+  }
+
+  public Command cubeCommand(){
+    return this.run(() -> setCube());
+  }
+
+  public Command coneCommand(){
+    return this.run(() -> setCone());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (getGripperOccupied()){
-      setLEDColor(1, 1, 0);
-    } else if (getIsGamePieceCube()){
-      setLEDColor(.5, 0, .5);
-    } else {
-      setLEDColor(0, 0, 1);
-    }
+    
   }
 }

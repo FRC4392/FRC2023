@@ -12,10 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.Autos;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.manualGripper;
-import frc.robot.commands.manualGripper2;
-import frc.robot.commands.manualGripper3;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -50,7 +48,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     configureBindings();
-
   }
 
   /**
@@ -71,7 +68,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    led.setMode(0);
+  }
 
   @Override
   public void disabledPeriodic() {
@@ -81,7 +80,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_autonomousCommand = Autos.getSimpleAutoCommand(arm, bident, drivetrain, intake);
     // schedule the autonomous command (example)
+    led.setMode(1);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -99,6 +100,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    led.setMode(2);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -113,6 +115,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
+    led.setMode(3);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -125,7 +128,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-
+    led.setMode(4);
   }
 
   /** This function is called periodically whilst in simulation. */
@@ -157,8 +160,8 @@ public class Robot extends TimedRobot {
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
     shelfTriggerBackwards.onTrue(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(18)));
 
-    cubeIndicatorTrigger.whileTrue(led.setLedCube());
-    coneIndicatorTrigger.whileTrue(led.setLedCone());
+     cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
+     coneIndicatorTrigger.whileTrue(bident.coneCommand());
 
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
 

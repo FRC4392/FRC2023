@@ -50,6 +50,8 @@ public class Intake extends SubsystemBase {
 
     pivotEncoder = pivot.getEncoder();
 
+    pivot.setSmartCurrentLimit(40);
+
     pivotPID = pivot.getPIDController();
 
     pivotEncoder.setPositionConversionFactor(360.0/75.23);
