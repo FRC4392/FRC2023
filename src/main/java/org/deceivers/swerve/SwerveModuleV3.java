@@ -99,8 +99,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     // Sets the rotation speed of the azimuth motor in open loop mode
     public void setRotation(double rotation) {
-        mAzimuthAbsoluteEncoder.getPosition();
-        //mAzimuthMotor.set(rotation);
+        mAzimuthMotor.set(rotation);
     }
 
     // Gets the speed of the drive motor
@@ -110,7 +109,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     // Gets the rotation position of the azimuth module
     public double getRotation() {
-        return mAzimuthIncrementalEncoder.getPosition();
+        return mAzimuthAbsoluteEncoder.getPosition();
     }
 
     // Gets the x/y location of the module relative to the center of the robot
