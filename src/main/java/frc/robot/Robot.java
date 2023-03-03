@@ -6,8 +6,12 @@ package frc.robot;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -40,6 +44,8 @@ public class Robot extends TimedRobot {
   Limelight limelight = new Limelight();
   LED led = new LED();
 
+  SendableChooser<String> chooser = new SendableChooser<>();
+
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -47,6 +53,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    chooser.setDefaultOption("Stupid", "Stupid");
+    chooser.addOption("LoadingStation", "LoadingStation");
+    chooser.addOption("Balance", "Balance");
+    chooser.addOption("Bump", "Bump");
+
+    SmartDashboard.putData(chooser);
+
     configureBindings();
   }
 
@@ -74,13 +87,32 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    
+    if (DriverStation.getAlliance() == Alliance.Blue){
+    bident.setLEDColor(0, 0, 1);
+    } else {
+      bident.setLEDColor(1, 0, 0);
+    }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = Autos.getSimpleAutoCommand(arm, bident, drivetrain, intake);
+    switch(chooser.getSelected()){
+      case "LoadingStation":
+        m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
+      break;
+      case "Balance":
+        m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
+      break;
+      case "Bump":
+        m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
+      break;
+      case "Stupid":
+        m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
+      break;
+      default:
+        m_autonomousCommand = null;
+    }
     // schedule the autonomous command (example)
     led.setMode(1);
     if (m_autonomousCommand != null) {
@@ -150,15 +182,15 @@ public class Robot extends TimedRobot {
     Trigger cubeIndicatorTrigger = operatorController.povDown();
     Trigger coneIndicatorTrigger = operatorController.povUp();
 
-    operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)));
+    operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-14)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-8)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-75).andThen(arm.shoulderPositionCommand(0)));
 
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
-    shelfTriggerBackwards.onTrue(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(18)));
+    shelfTriggerBackwards.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(18))));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
@@ -170,7 +202,7 @@ public class Robot extends TimedRobot {
 
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
-    operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed));
+    operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());

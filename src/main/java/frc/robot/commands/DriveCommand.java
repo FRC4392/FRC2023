@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -66,7 +65,7 @@ public class DriveCommand extends CommandBase {
 
     //slow down `on
     if(mController.getRightBumper()){
-      driveFactor = 0.3;
+      driveFactor = 0.5;
     } else {
       driveFactor = 1.0;
     }
@@ -95,9 +94,8 @@ public class DriveCommand extends CommandBase {
     if (!mController.getLeftBumper()){
       joystickAngle = joystickAngle.plus(new Rotation2d().fromDegrees(180));
     }
-    // SmartDashboard.putNumber("joystickAngle", joystickAngle.getDegrees());
+
     double joystickMagnitude = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));
-    // SmartDashboard.putNumber("joystickMagnitude", joystickMagnitude);
      if (joystickMagnitude > .1){
        rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), joystickAngle.getRadians());
       if (Math.abs(rotVel) > joystickMagnitude){

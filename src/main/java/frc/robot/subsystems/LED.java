@@ -131,6 +131,8 @@ public class LED extends SubsystemBase {
 
           break;
       }
+    } else {
+      setLedBlue();
     }
 
       // Set the data

@@ -16,7 +16,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -163,14 +162,6 @@ public class Arm extends SubsystemBase {
   }
 
   private void log(){
-    // SmartDashboard.putNumber("Shoulder Absolute position", shoulCanCoder.getAbsolutePosition());
-    // SmartDashboard.putNumber("Shoulder Inremental position", shoulder1Encoder.getPosition());
-    // SmartDashboard.putNumber("shoulder setpoint", shoulderSetpoint.position);
-    // SmartDashboard.putNumber("elbow setpoint", elbowSetpoint.position);
-    // SmartDashboard.putNumber("elbow goal", elbowGoal.position);
-    // SmartDashboard.putNumber("InPosition", Math.abs(shoulderGoal.position - shoulderSetpoint.position));
-    // SmartDashboard.putNumber("Elboe Absolute position", elbowCanCoder.getAbsolutePosition());
-    // SmartDashboard.putNumber("Elboe Inremental position", elbowEncoder.getPosition());
   }
 
   @Override

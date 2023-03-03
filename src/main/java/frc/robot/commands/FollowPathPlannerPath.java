@@ -8,7 +8,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -35,7 +34,6 @@ public class FollowPathPlannerPath extends CommandBase {
       
       PathPlannerState initialState = trajectory.getInitialState();
       drivetrain.setGyro(initialState.holonomicRotation.getDegrees());
-      SmartDashboard.putNumber("AutoGyroValue", drivetrain.getRotation());
       drivetrain.setLocation(initialState.poseMeters.getX(), initialState.poseMeters.getY(), initialState.holonomicRotation.getDegrees());
     }
 

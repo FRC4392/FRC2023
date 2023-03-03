@@ -74,7 +74,6 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
       mSwerveDrive.updateOdometry();
       mSwerveDrive.log();
-      // SmartDashboard.putNumber("GyroAbs", pidgey.getFusedHeading());
     }
   
     public void setLocation(double x, double y, double angle){

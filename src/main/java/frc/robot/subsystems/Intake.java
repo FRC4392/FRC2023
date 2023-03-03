@@ -4,10 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.swing.text.Position;
-
-import org.opencv.objdetect.FaceDetectorYN;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -56,7 +52,7 @@ public class Intake extends SubsystemBase {
 
     pivotEncoder.setPositionConversionFactor(360.0/75.23);
 
-    pivotPID.setOutputRange(.5, .5);
+    pivotPID.setOutputRange(.75, .75);
 
     kP = 0.1;
     kI = 0.00;
@@ -89,12 +85,16 @@ public class Intake extends SubsystemBase {
     return this.runEnd(() -> setIntake(.25), () -> setIntake(0));
   }
 
-  public Command getIntakePivotCommand(double angle){
-    return this.run(() -> setAngle(angle)).until(()-> pivotInPosition());
+  public void doNothing(){
+
   }
 
-  private boolean pivotInPosition() {
-    return true;
+  public Command getIntakePivotCommand(double angle){
+    return this.startEnd(() -> setAngle(angle), () -> doNothing()).until(() -> pivotInPosition());
+  }
+
+  public boolean pivotInPosition() {
+    return Math.abs(pivotSetpoint.position - pivotGoal.position) < 5;
   }
 
   @Override

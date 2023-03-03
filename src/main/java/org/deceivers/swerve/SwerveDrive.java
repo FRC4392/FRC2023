@@ -16,7 +16,6 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -136,7 +135,6 @@ public class SwerveDrive {
         SwerveModulePosition[] states = new SwerveModulePosition[numModules];
         for (int i = 0; i < numModules; i++) {
             states[i] = mModules[i].getPosition();
-            SmartDashboard.putNumber("state " + i + " distance", states[i].distanceMeters);
         }
 
         return mSwerveDriveOdometry.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
@@ -159,8 +157,6 @@ public class SwerveDrive {
     public void log(){
         Arrays.stream(mModules).forEach(SwerveModule::log);
         double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};
-        SmartDashboard.putNumber("xposition", getPose().getX());
-        SmartDashboard.putNumber("yPosition", getPose().getY());
         swervePose.set(swervePoseArray);
     }
 }

@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleV3 implements SwerveModule {
 
@@ -142,15 +141,6 @@ public class SwerveModuleV3 implements SwerveModule {
     // Log swerve data
     @Override
     public void log() {
-        // SmartDashboard.putNumber(mName + " Azimuth Position",
-        // mAzimuthIncrementalEncoder.getPosition());
-        SmartDashboard.putNumber(mName + "Absolute Position", mAzimuthAbsoluteEncoder.getPosition());
-        // SmartDashboard.putNumber(mName + " Incremental Position",
-        // mAzimuthIncrementalEncoder.getPosition());
-        SmartDashboard.putNumber(mName + " Velocity", mDriveEncoder.getVelocity());
-        SmartDashboard.putNumber(mName + "Drive Encoder Position", mDriveEncoder.getPosition());
-        // SmartDashboard.putNumber(mName + " Rotation Setpoint", setpoint);
-        // SmartDashboard.putNumber(mName + "Percent Output", mDriveMotor.get());
     }
 
     // Set the speed and direction of the swerve module
@@ -159,20 +149,7 @@ public class SwerveModuleV3 implements SwerveModule {
         Rotation2d current = Rotation2d.fromDegrees(mAzimuthAbsoluteEncoder.getPosition());
         SwerveModuleState optimizedState = SwerveModuleState.optimize(drive, current);
         double setpoint = optimizedState.angle.getDegrees();
-
-        // if (setpoint < 0){
-        // setpoint = 360 - Math.abs(setpoint);
-        // }
-
-        // SmartDashboard.putNumber(mName + "radian setpoint",
-        // optimizedState.angle.getRadians());
-        // SmartDashboard.putNumber(mName + " Given Setpoint", setpoint);
-        // SmartDashboard.putNumber(mName + "Current Location",
-        // mAzimuthAbsoluteEncoder.getPosition());
         double velocity = optimizedState.speedMetersPerSecond;
-        // SmartDashboard.putNumber(mName + " Given Velocity", velocity);
-
-        // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
         mAzimuthPID.setReference(setpoint, ControlType.kPosition);
         mDriveMotor.set(velocity);
     }
@@ -182,15 +159,7 @@ public class SwerveModuleV3 implements SwerveModule {
         Rotation2d current = Rotation2d.fromDegrees(mAzimuthAbsoluteEncoder.getPosition());
         SwerveModuleState optimizedState = SwerveModuleState.optimize(drive, current);
         double setpoint = optimizedState.angle.getDegrees();
-
-        // if (setpoint < 0){
-        // setpoint = 360 - Math.abs(setpoint);
-        // }
-
-        // SmartDashboard.putNumber(mName + " Given Setpoint", Angle);
         double velocity = optimizedState.speedMetersPerSecond;
-
-        // SmartDashboard.putNumber(mName + " Azimuth CalcSetPoint", setpoint);
         mAzimuthPID.setReference(setpoint, ControlType.kPosition);
         mDrivePID.setReference(velocity, ControlType.kVelocity);
     }
