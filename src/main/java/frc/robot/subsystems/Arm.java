@@ -15,7 +15,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,8 +33,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder elbowCanCoder = new CANCoder(22);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 180);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*2);
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 160);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*1.5);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
@@ -72,6 +74,10 @@ public class Arm extends SubsystemBase {
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
     Shoulder1.enableSoftLimit(SoftLimitDirection.kForward, true);
     Shoulder1.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    Shoulder1.setSmartCurrentLimit(40);
+    Shoulder2.setSmartCurrentLimit(40);
+    Elbow.setSmartCurrentLimit(40);
 
     Elbow.setSoftLimit(SoftLimitDirection.kForward, 180);
     Elbow.setSoftLimit(SoftLimitDirection.kReverse, -180);
@@ -130,8 +136,10 @@ public class Arm extends SubsystemBase {
   }
 
   public void setZero() {
+    
     shoulder1Encoder.setPosition(shoulCanCoder.getAbsolutePosition());
     elbowEncoder.setPosition(elbowCanCoder.getAbsolutePosition() - shoulCanCoder.getAbsolutePosition());
+    updateCurrentState();
   }
 
   public double getElbowPostition() {
@@ -161,11 +169,28 @@ public class Arm extends SubsystemBase {
     return this.startEnd(() -> setShoulderPosition(position), () ->doNothing()).until(() -> shoulderInPostion());
   }
 
+  public Command resetEncoder(){
+    return this.runOnce(() -> setZero());
+  }
+
+  public boolean isZero(){
+    return ((Math.abs(shoulCanCoder.getAbsolutePosition())) < 3 && Math.abs(elbowCanCoder.getAbsolutePosition() - shoulCanCoder.getAbsolutePosition()) < 3);
+  }
+
   private void log(){
+  }
+
+  public void updateCurrentState(){
+    elbowSetpoint = new State(getElbowPostition(), 0);
+      shoulderSetpoint = new State(getShoulderPostition(), 0);
   }
 
   @Override
   public void periodic() {
+
+    if (DriverStation.isDisabled()){
+      updateCurrentState();
+    }
     // This method will be called once per scheduler run
 
     TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, elbowSetpoint);

@@ -92,7 +92,7 @@ public class DriveCommand extends CommandBase {
 
     Rotation2d joystickAngle = Rotation2d.fromRadians(Math.atan2(-mController.getRightX(), -mController.getRightY()));
     if (!mController.getLeftBumper()){
-      joystickAngle = joystickAngle.plus(new Rotation2d().fromDegrees(180));
+      joystickAngle = joystickAngle.plus(Rotation2d.fromDegrees(180));
     }
 
     double joystickMagnitude = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));

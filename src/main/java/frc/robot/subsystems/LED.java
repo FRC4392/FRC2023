@@ -131,7 +131,9 @@ public class LED extends SubsystemBase {
 
           break;
       }
-    } else {
+    } else if (mode == -1){
+      
+    }else {
       setLedBlue();
     }
 
@@ -164,6 +166,18 @@ public class LED extends SubsystemBase {
   public void setLedCone() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledBuffer.setRGB(i, 255, 255, 0);
+    }
+  }
+
+  public void setLEDBlack(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 0, 0, 0);
+    }
+  }
+
+  public void setLEDGreen(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 0, 255, 0);
     }
   }
 

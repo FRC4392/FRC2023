@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import java.time.Instant;
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -19,28 +22,29 @@ public final class Autos {
   /** Example static factory for an autonomous command. */
 
   public static Command getLoadingStationCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
-    return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+    DoubleSupplier intakeSpeed = () -> .5;
+    return Commands.sequence(bident.autoGrabCommand(intakeSpeed).withTimeout(0.1), arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)),
+        bident.openCommand().withTimeout(.1), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
             PathPlanner.loadPath("LoadingStation", 3, 1), DriverStation.getAlliance()), true, drivetrain));
   }
 
   public static Command getBalanceCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+        bident.openCommand().withTimeout(.1), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
             PathPlanner.loadPath("Balance", 3, 1), DriverStation.getAlliance()), true, drivetrain));
   }
 
   public static Command getBumpCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+        bident.openCommand().withTimeout(.1), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
             PathPlanner.loadPath("Bump", 3, 1), DriverStation.getAlliance()), true, drivetrain));
   }
 
   public static Command getStupidCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)));
+        bident.openCommand().withTimeout(.1), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)));
   }
 }

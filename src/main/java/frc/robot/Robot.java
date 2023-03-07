@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.resetArmEncoders;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -182,18 +184,26 @@ public class Robot extends TimedRobot {
     Trigger cubeIndicatorTrigger = operatorController.povDown();
     Trigger coneIndicatorTrigger = operatorController.povUp();
 
+    BooleanSupplier brakeSupplier = () -> driverController.getXButton();
+
+    Trigger brake = new Trigger(brakeSupplier);
+
+    brake.whileTrue(drivetrain.brakeCommand());
+
     operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)));
-    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(-8)));
-    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-75).andThen(arm.shoulderPositionCommand(0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-8)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-85).andThen(arm.shoulderPositionCommand(0)));
 
 
-    shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
-    shelfTriggerBackwards.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(18))));
+    shelfTrigger.onTrue(arm.elbowPositionCommand(-108).andThen(arm.shoulderPositionCommand(12.0)));
+    shelfTriggerBackwards.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15))));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
+
+     operatorController.back().whileTrue(arm.resetEncoder());
 
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
 

@@ -45,6 +45,10 @@ public class JoeBident extends SubsystemBase {
     //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
     CamellaHarris.setInverted(true);
 
+    HunterBident.burnFlash();
+    JillBident.burnFlash();
+    CamellaHarris.burnFlash();
+
   }
   public void setIntake(double velocity){
     HunterBident.set(velocity);

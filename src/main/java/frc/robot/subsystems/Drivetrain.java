@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
@@ -104,5 +105,15 @@ public class Drivetrain extends SubsystemBase {
 
     public void setModulesAngle(double angle, int module){
       mSwerveDrive.setModulesAngle(angle, module);
+    }
+
+    public Command brakeCommand(){
+      return this.run(() -> {
+        double angle = -45;
+        for (int i = 0; i < 4; i++){
+          setModulesAngle(angle, i);
+          angle += 90;
+        }
+      });
     }
 }
