@@ -177,9 +177,11 @@ public class Robot extends TimedRobot {
     Trigger highGoalCubeTrigger = operatorController.y().and(CubeTrigger);
     Trigger MidGoalConeTrigger = operatorController.x().and(CubeTrigger.negate());
     Trigger MidGoalCubeTrigger = operatorController.x().and(CubeTrigger);
+    Trigger shelfTrigger = operatorController.b().and(CubeTrigger.negate());
+    Trigger lowGoalConeTrigger = operatorController.a().and(CubeTrigger.negate());
+    Trigger lowGoalCubeTrigger = operatorController.a().and(CubeTrigger);
 
-    Trigger shelfTrigger = operatorController.a().and(CubeTrigger.negate());
-    Trigger shelfTriggerBackwards = operatorController.a().and(CubeTrigger);
+    Trigger groundIntake = operatorController.leftStick().negate();
 
     Trigger cubeIndicatorTrigger = operatorController.povDown();
     Trigger coneIndicatorTrigger = operatorController.povUp();
@@ -190,15 +192,16 @@ public class Robot extends TimedRobot {
 
     brake.whileTrue(drivetrain.brakeCommand());
 
-    operatorController.b().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+    operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-17)));
     MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-8)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-85).andThen(arm.shoulderPositionCommand(0)));
-
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-108).andThen(arm.shoulderPositionCommand(12.0)));
-    shelfTriggerBackwards.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15))));
+    groundIntake.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15))));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
@@ -206,9 +209,6 @@ public class Robot extends TimedRobot {
      operatorController.back().whileTrue(arm.resetEncoder());
 
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
-
-    operatorController.leftStick().onTrue(intake.getIntakePivotCommand(100));
-    operatorController.rightStick().onTrue(intake.getIntakePivotCommand(0));
 
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
