@@ -30,7 +30,18 @@ public class LED extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+  
+    if(DriverStation.getAlliance() == Alliance.Blue)
+        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+          m_ledBuffer.setRGB(i, 0, 255, 0);
+        }
+        else{
+          for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setRGB(i, 255, 0, 0);
+          }
+        }
+    
+    /* 
     if (mode == 0) {
       switch (state) {
         case 1:
@@ -139,8 +150,8 @@ public class LED extends SubsystemBase {
 
       // Set the data
       m_led.setData(m_ledBuffer);
+  */
   }
-
   private void rainbow() {
     // For every pixel
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
