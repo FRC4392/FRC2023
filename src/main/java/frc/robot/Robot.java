@@ -181,7 +181,8 @@ public class Robot extends TimedRobot {
     Trigger lowGoalConeTrigger = operatorController.a().and(CubeTrigger.negate());
     Trigger lowGoalCubeTrigger = operatorController.a().and(CubeTrigger);
 
-    Trigger groundIntake = operatorController.leftStick().negate();
+    Trigger groundIntake = operatorController.leftStick().and(CubeTrigger.negate());;
+    Trigger groundOuttake = operatorController.leftStick().and(CubeTrigger);
 
     Trigger cubeIndicatorTrigger = operatorController.povDown();
     Trigger coneIndicatorTrigger = operatorController.povUp();
@@ -201,7 +202,6 @@ public class Robot extends TimedRobot {
     lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-108).andThen(arm.shoulderPositionCommand(12.0)));
-    groundIntake.onTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15))));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
@@ -214,6 +214,9 @@ public class Robot extends TimedRobot {
 
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
+
+    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand())))));
+    groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());

@@ -87,6 +87,10 @@ public class Intake extends SubsystemBase {
     return this.runEnd(() -> setIntake(.25), () -> setIntake(0));
   }
 
+  public Command getOuttakeCommand(){
+    return this.runEnd(() -> setIntake(-.25), () -> setIntake(0));
+  }
+  
   public void doNothing(){
 
   }
