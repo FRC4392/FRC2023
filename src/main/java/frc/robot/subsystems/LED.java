@@ -32,15 +32,36 @@ public class LED extends SubsystemBase {
   public void periodic() {
   
     if(DriverStation.getAlliance() == Alliance.Blue)
-        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-          m_ledBuffer.setRGB(i, 0, 255, 0);
+        for (i = 0; i < m_ledBuffer.getLength(); i++) {
+          m_ledBuffer.setHSV(i, 80, 255, fade);
+        }
+        if (direction == 0) {
+          fade += 4;
+          if (fade == 128) {
+            direction = 1;
+          }
+        } else if (direction == 1) {
+          fade -= 4;
+          if (fade == 0) {
+            direction = 0;
+          }
         }
         else{
           for (var i = 0; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setRGB(i, 255, 0, 0);
           }
+          if (direction == 0) {
+            fade += 4;
+            if (fade == 128) {
+              direction = 1;
+            }
+          } else if (direction == 1) {
+            fade -= 4;
+            if (fade == 0) {
+              direction = 0;
+            }
+          }
         }
-    
     /* 
     if (mode == 0) {
       switch (state) {
