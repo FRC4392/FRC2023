@@ -188,10 +188,13 @@ public class Robot extends TimedRobot {
     Trigger coneIndicatorTrigger = operatorController.povUp();
 
     BooleanSupplier brakeSupplier = () -> driverController.getXButton();
+    BooleanSupplier gripperSupplier = () -> bident.getGripperProx();
 
     Trigger brake = new Trigger(brakeSupplier);
+    Trigger gripperReady = new Trigger(gripperSupplier);
 
     brake.whileTrue(drivetrain.brakeCommand());
+    gripperReady.whileTrue(led.setLEDGreen());
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
