@@ -12,10 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -24,31 +22,21 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 public class SwerveDrive {
-    //Swerve Devices
     private final SwerveModule[] mModules;
     private final int numModules;
     private final SwerveDriveKinematics mKinematics;
     private final SwerveDriveOdometry mSwerveDriveOdometry;
     private final HolonomicDriveController mDriveController;
     private final DoubleSupplier mGyroAngle;
-    private final ProfiledPIDController rotationPIDController = new ProfiledPIDController(15,.1,.1,new TrapezoidProfile.Constraints(500, 500));
+    private ProfiledPIDController rotationPIDController = new ProfiledPIDController(15,.1,.1,new TrapezoidProfile.Constraints(500, 500));
 
-    //Network Table Data
-    private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
-    private final DoubleArrayPublisher pathGoalPose;
-    private final DoubleArrayPublisher pathGoalPoseError;
-    private final DoubleArrayPublisher swervePose;
+    //move gyro out of this class?
+
 
     public SwerveDrive(DoubleSupplier gyroAngle, SwerveModule... modules){
         mGyroAngle = gyroAngle;
         numModules = modules.length;
         mModules = Arrays.copyOf(modules, numModules);
-
-        //Network Table setup
-        NetworkTable swerveTable = networkTableInstance.getTable("swervetable");
-        pathGoalPose = swerveTable.getDoubleArrayTopic("/swervetable/pathgoalpose").publish();
-        pathGoalPoseError = swerveTable.getDoubleArrayTopic("/swervetable/pathgoalposeerror").publish();
-        swervePose = swerveTable.getDoubleArrayTopic("/swervetable/swervepose").publish();
 
         Translation2d[] moduleLocations = new Translation2d[numModules];
         for (int i = 0; i < numModules; i++){
@@ -69,34 +57,7 @@ public class SwerveDrive {
         mSwerveDriveOdometry = new SwerveDriveOdometry(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, new Pose2d());
 
         Arrays.stream(mModules).forEach(SwerveModule::init);
-    }
-
-    public void setLocation(double x, double y, double angle){
-        Pose2d newPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
-        SwerveModulePosition[] states = new SwerveModulePosition[numModules];
-        for (int i = 0; i < numModules; i++) {
-            states[i] = mModules[i].getPosition();
-        }
-
-        mSwerveDriveOdometry.resetPosition(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, newPose);
-        rotationPIDController.reset(angle);
-    }
-
-    public void setModulesAngle(double angle, int module){
-        mModules[module].setAngle(angle);
-    }
-
-    public Pose2d getPose(){
-        return mSwerveDriveOdometry.getPoseMeters();
-    }
-
-    public ChassisSpeeds getChassisSpeeds(){
-        SwerveModuleState[] states = new SwerveModuleState[numModules];
-        for (int i = 0; i < numModules; i++) {
-            states[i] = mModules[i].getState();
-        }
-        ChassisSpeeds chassisSpeeds = mKinematics.toChassisSpeeds(states);
-        return(chassisSpeeds);
+        Arrays.stream(mModules).forEach(SwerveModule::init);
     }
 
 	public void stop() {
@@ -115,6 +76,7 @@ public class SwerveDrive {
         for (int i = 0; i < numModules; i++){
             mModules[i].set(states[i]);
         }
+
     }
 
     public void driveClosedLoop(double forward, double strafe, double azimuth, boolean fieldRelative){
@@ -131,6 +93,10 @@ public class SwerveDrive {
         }
     }
 
+    public Pose2d getPosition(){
+        return mSwerveDriveOdometry.getPoseMeters();
+    }
+
     public Pose2d updateOdometry(){
         SwerveModulePosition[] states = new SwerveModulePosition[numModules];
         for (int i = 0; i < numModules; i++) {
@@ -140,23 +106,64 @@ public class SwerveDrive {
         return mSwerveDriveOdometry.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
 
+    //derek
+    public ChassisSpeeds getChassisSpeeds(){
+        SwerveModuleState[] states = new SwerveModuleState[numModules];
+        for (int i = 0; i < numModules; i++) {
+            states[i] = mModules[i].getState();
+        }
+        ChassisSpeeds chassisSpeeds = mKinematics.toChassisSpeeds(states);
+        return(chassisSpeeds);
+    }
+
     public void followPath(double startTime, PathPlannerTrajectory pptrajectory){
         PathPlannerState goal = (PathPlannerState) pptrajectory.sample(Timer.getFPGATimestamp() - startTime);
         
 
-        ChassisSpeeds speeds = mDriveController.calculate(getPose(), goal, Rotation2d.fromDegrees(goal.holonomicRotation.getDegrees()));
+        ChassisSpeeds speeds = mDriveController.calculate(getPosition(), goal, Rotation2d.fromDegrees(goal.holonomicRotation.getDegrees()));
 
         driveClosedLoop(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
-
-        double[] pathGoalArray = {goal.poseMeters.getX(), goal.poseMeters.getY(), goal.holonomicRotation.getDegrees()};
-        pathGoalPose.set(pathGoalArray);
-        double[] pathErrorArray = {goal.poseMeters.getX()-getPose().getX(), goal.poseMeters.getY()-getPose().getY(), goal.holonomicRotation.getDegrees() - getPose().getRotation().getDegrees()};
-        pathGoalPoseError.set(pathErrorArray);
+        SmartDashboard.putNumber("goalx", goal.poseMeters.getX());
+        SmartDashboard.putNumber("xerror", goal.poseMeters.getX() - getPosition().getX());
+        SmartDashboard.putNumber("goaly", goal.poseMeters.getY());
+        SmartDashboard.putNumber("yerror", goal.poseMeters.getY() - getPosition().getY());
+        SmartDashboard.putNumber("goalrot", goal.holonomicRotation.getDegrees());
+        SmartDashboard.putNumber("roterror", goal.holonomicRotation.getDegrees() - getPosition().getRotation().getDegrees());
+        SmartDashboard.putNumber("xVel", speeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("yVel", speeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("rotationPIDsetpoint", rotationPIDController.getSetpoint().position);
+        SmartDashboard.putNumber("rotationPIDgoal", rotationPIDController.getGoal().position);
+        SmartDashboard.putNumber("rotationPIDerror", rotationPIDController.getPositionError());
     }
 
     public void log(){
         Arrays.stream(mModules).forEach(SwerveModule::log);
-        double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};
-        swervePose.set(swervePoseArray);
+        Pose2d pose = getPosition();
+        SmartDashboard.putNumber("SwerveXLocation", pose.getX());
+        SmartDashboard.putNumber("SwerveYLocation", pose.getY());
+        SmartDashboard.putNumber("SwerveRotation", pose.getRotation().getDegrees());
+        SmartDashboard.putNumber("GyroAngle", mGyroAngle.getAsDouble());
+        SmartDashboard.putNumber("poseRotation", pose.getRotation().getDegrees());
     }
+
+    public void setLocation(double x, double y, double angle){
+        Pose2d newPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
+        SwerveModulePosition[] states = new SwerveModulePosition[numModules];
+        for (int i = 0; i < numModules; i++) {
+            states[i] = mModules[i].getPosition();
+        }
+
+        mSwerveDriveOdometry.resetPosition(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, newPose);
+        rotationPIDController.reset(angle);
+    }
+
+    public void setStartPostion(){
+        //mSwerveDriveOdometry.resetPosition(trajectory.getInitialPose(), Rotation2d.fromDegrees(0));
+    }
+
+    public void setModulesAngle(double angle, int module){
+        mModules[module].setAngle(angle);
+    }
+
+
 }
