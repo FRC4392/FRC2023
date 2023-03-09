@@ -188,7 +188,7 @@ public class Robot extends TimedRobot {
     Trigger coneIndicatorTrigger = operatorController.povUp();
 
     BooleanSupplier brakeSupplier = () -> driverController.getXButton();
-    BooleanSupplier gripperSupplier = () -> bident.getGripperProx();
+    BooleanSupplier gripperSupplier = () -> bident.getGripperOccupied();
 
     Trigger brake = new Trigger(brakeSupplier);
     Trigger gripperReady = new Trigger(gripperSupplier);
