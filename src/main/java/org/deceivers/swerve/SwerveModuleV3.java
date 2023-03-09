@@ -99,7 +99,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     @Override
     public void init() {
-        mAzimuthEncoder.setPositionConversionFactor(360.0/35.94);
+        mAzimuthEncoder.setPositionConversionFactor(360.0/(18.88 * 3.44));
         mAzimuthMotor.setIdleMode(IdleMode.kBrake);
         mAzimuthMotor.setSmartCurrentLimit(20);
         mAzimuthPID.setP(0.05);
