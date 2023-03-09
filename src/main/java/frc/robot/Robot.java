@@ -197,14 +197,14 @@ public class Robot extends TimedRobot {
     gripperReady.whileTrue(led.accyGreem());
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
-    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-8)));
-    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-85).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
-    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-8)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
 
-    shelfTrigger.onTrue(arm.elbowPositionCommand(-108).andThen(arm.shoulderPositionCommand(12.0)));
+    shelfTrigger.onTrue(arm.elbowPositionCommand(-98).andThen(arm.shoulderPositionCommand(12.0)));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
