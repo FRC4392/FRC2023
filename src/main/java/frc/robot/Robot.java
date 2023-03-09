@@ -219,6 +219,7 @@ public class Robot extends TimedRobot {
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
     groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
+    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
