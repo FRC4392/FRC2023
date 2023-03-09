@@ -31,7 +31,7 @@ public class LED extends SubsystemBase {
   @Override
   public void periodic() {
   
-    if(DriverStation.getAlliance() == Alliance.Blue)
+    if(DriverStation.getAlliance() == Alliance.Blue){
         for (i = 0; i < m_ledBuffer.getLength(); i++) {
           m_ledBuffer.setHSV(i, 80, 255, fade);
         }
@@ -46,9 +46,11 @@ public class LED extends SubsystemBase {
             direction = 0;
           }
         }
+      }
         else{
           for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setRGB(i, 255, 0, 0);
+            m_ledBuffer.setHSV(i, 0, 255, fade);
+
           }
           if (direction == 0) {
             fade += 4;
@@ -62,6 +64,7 @@ public class LED extends SubsystemBase {
             }
           }
         }
+      
     /* 
     if (mode == 0) {
       switch (state) {
@@ -231,6 +234,10 @@ public class LED extends SubsystemBase {
 
   public Command actuallyCube() {
     return this.startEnd(() -> setLedCube(), () -> setLedBlue());
+  }
+
+  public Command accyGreem() {
+    return this.startEnd(() -> setLEDGreen(), () -> setLedBlue());
   }
 
   public void setMode(int mode) {

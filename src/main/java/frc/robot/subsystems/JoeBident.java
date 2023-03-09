@@ -111,6 +111,31 @@ public class JoeBident extends SubsystemBase {
       });
   }
 
+  public Command autoIntakeCommand(Double speed){
+    return this.runEnd(
+      () -> {
+        if (getGripperProx()){
+          setGripper(.5);
+        } else {
+          setGripper(0);
+        }
+
+        if(getGripperOccupied()){
+          setIntake(speed *.25);
+        } else {
+          setIntake(speed);
+        }
+      }, 
+      () -> {
+        if (getGripperOccupied() || getGripperProx()){
+          setIntake(.1);
+          setGripper(.1);
+        } else {
+          setIntake(0);
+          setGripper(0);
+        }
+      });
+  }
   public Command ejectWhileOpeningCommand(DoubleSupplier speed){
     return this.runEnd(() -> {
       setGripper(-.1);

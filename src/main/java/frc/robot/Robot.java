@@ -194,7 +194,7 @@ public class Robot extends TimedRobot {
     Trigger gripperReady = new Trigger(gripperSupplier);
 
     brake.whileTrue(drivetrain.brakeCommand());
-    gripperReady.whileTrue(led.setLEDGreen());
+    gripperReady.whileTrue(led.accyGreem());
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
@@ -212,13 +212,13 @@ public class Robot extends TimedRobot {
      operatorController.back().whileTrue(arm.resetEncoder());
 
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
-
+      
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
-    operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
+    //operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand())))));
+    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
     groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
