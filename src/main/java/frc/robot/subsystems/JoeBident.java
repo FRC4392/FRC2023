@@ -39,7 +39,7 @@ public class JoeBident extends SubsystemBase {
     JillBident.setSmartCurrentLimit(25);
     JillBident.setIdleMode(IdleMode.kBrake);
     
-    CamellaHarris.setSmartCurrentLimit(10);
+    CamellaHarris.setSmartCurrentLimit(5);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
     //CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
     //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);

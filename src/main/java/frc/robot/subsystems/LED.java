@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LED extends SubsystemBase {
   /** Creates a new LED. */
   private int state = 0;
-  //private int m_rainbowFirstPixelHue = 0;
+  // private int m_rainbowFirstPixelHue = 0;
   private int rainbowtime = 0;
   private int fade = 0;
   private int direction = 0;
@@ -42,7 +42,7 @@ public class LED extends SubsystemBase {
           // i = 0;
           // state = 2;
           // }
-          if (rainbowtime < 200) {
+          if (rainbowtime < 10000) {
             setLedFade();
             rainbowtime++;
           } else {
@@ -150,18 +150,19 @@ public class LED extends SubsystemBase {
   }
 
   // private void rainbow() {
-  //   // For every pixel
-  //   for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-  //     // Calculate the hue - hue is easier for rainbows because the color
-  //     // shape is a circle so only one value needs to precess
-  //     final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
-  //     // Set the value
-  //     m_ledBuffer.setHSV(i, hue, 255, 128);
-  //   }
-  //   // Increase by to make the rainbow "move"
-  //   m_rainbowFirstPixelHue += 1;
-  //   // Check bounds
-  //   m_rainbowFirstPixelHue %= 180;
+  // // For every pixel
+  // for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+  // // Calculate the hue - hue is easier for rainbows because the color
+  // // shape is a circle so only one value needs to precess
+  // final var hue = (m_rainbowFirstPixelHue + (i * 180 /
+  // m_ledBuffer.getLength())) % 180;
+  // // Set the value
+  // m_ledBuffer.setHSV(i, hue, 255, 128);
+  // }
+  // // Increase by to make the rainbow "move"
+  // m_rainbowFirstPixelHue += 1;
+  // // Check bounds
+  // m_rainbowFirstPixelHue %= 180;
   // }
 
   public void setLedCube() {
@@ -202,23 +203,24 @@ public class LED extends SubsystemBase {
   }
 
   public void setLedFade() {
-    if (DriverStation.getAlliance() == Alliance.Blue)
+    if (DriverStation.getAlliance() == Alliance.Blue) {
       for (i = 0; i < m_ledBuffer.getLength(); i++) {
         m_ledBuffer.setHSV(i, 80, 255, fade);
       }
-    if (direction == 0) {
-      fade += 4;
-      if (fade == 128) {
-        direction = 1;
-      }
-    } else if (direction == 1) {
-      fade -= 4;
-      if (fade == 0) {
-        direction = 0;
+      if (direction == 0) {
+        fade += 4;
+        if (fade == 128) {
+          direction = 1;
+        }
+      } else if (direction == 1) {
+        fade -= 4;
+        if (fade == 0) {
+          direction = 0;
+        }
       }
     } else {
       for (i = 0; i < m_ledBuffer.getLength(); i++) {
-        m_ledBuffer.setHSV(i, 80, 255, fade);
+        m_ledBuffer.setHSV(i, 0, 255, fade);
       }
       if (direction == 0) {
         fade += 4;
