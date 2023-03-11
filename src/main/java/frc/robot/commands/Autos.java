@@ -19,10 +19,14 @@ public final class Autos {
   /** Example static factory for an autonomous command. */
 
   public static Command getLoadingStationCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
+
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+        bident.openCommand().withTimeout(0.01), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+        Commands.race(
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
-            PathPlanner.loadPath("LoadingStation", 5, 2), DriverStation.getAlliance()), true, drivetrain));
+            PathPlanner.loadPath("LoadingStation", 5, 2), DriverStation.getAlliance()), true, drivetrain),
+            intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(18).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))))
+            );
   }
 
   public static Command getBalanceCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
