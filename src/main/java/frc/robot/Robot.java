@@ -195,6 +195,7 @@ public class Robot extends TimedRobot {
 
     brake.whileTrue(drivetrain.brakeCommand());
     gripperReady.whileTrue(led.accyGreem());
+    gripperReady.whileFalse(led.actuallyColor());
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));

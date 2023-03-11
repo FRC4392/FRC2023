@@ -142,7 +142,7 @@ public class LED extends SubsystemBase {
     } else if (mode == -1) {
 
     } else {
-      setLedColor();
+      //setLedColor();
     }
 
     // Set the data
@@ -246,6 +246,10 @@ public class LED extends SubsystemBase {
 
   public Command accyGreem() {
     return this.startEnd(() -> setLEDGreen(), () -> setLedColor());
+  }
+
+  public Command actuallyColor() {
+    return this.startEnd(() -> setLedColor(), () -> setLedColor());
   }
 
   public void setMode(int mode) {
