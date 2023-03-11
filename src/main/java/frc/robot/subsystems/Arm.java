@@ -42,8 +42,8 @@ public class Arm extends SubsystemBase {
 
   double ElbowPosition = 0.0;
 
-  private TrapezoidProfile.State elbowSetpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State shoulderSetpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State elbowSetpoint = new TrapezoidProfile.State(0, 0);
+  private TrapezoidProfile.State shoulderSetpoint = new TrapezoidProfile.State(0, 0);
 
   private TrapezoidProfile.State elbowGoal = new TrapezoidProfile.State(0, 0);
   private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State(0, 0);

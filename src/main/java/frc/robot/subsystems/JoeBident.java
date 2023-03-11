@@ -39,7 +39,7 @@ public class JoeBident extends SubsystemBase {
     JillBident.setSmartCurrentLimit(25);
     JillBident.setIdleMode(IdleMode.kBrake);
     
-    CamellaHarris.setSmartCurrentLimit(5);
+    CamellaHarris.setSmartCurrentLimit(15);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
     //CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
     //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
@@ -89,7 +89,7 @@ public class JoeBident extends SubsystemBase {
     return this.runEnd(
       () -> {
         if (getGripperProx()){
-          setGripper(.5);
+          setGripper(.75);
         } else {
           setGripper(0);
         }
@@ -101,9 +101,9 @@ public class JoeBident extends SubsystemBase {
         }
       }, 
       () -> {
-        if (getGripperOccupied() || getGripperProx()){
-          setIntake(.1);
-          setGripper(.1);
+        if (getGripperOccupied()){
+          setIntake(.2);
+          setGripper(.2);
         } else {
           setIntake(0);
           setGripper(0);

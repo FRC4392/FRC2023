@@ -197,14 +197,14 @@ public class Robot extends TimedRobot {
     gripperReady.whileTrue(led.accyGreem());
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-140.0).andThen(arm.shoulderPositionCommand(-37.0)));
-    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-110).andThen(arm.shoulderPositionCommand(-8)));
-    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-85).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
-    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-20).andThen(arm.shoulderPositionCommand(-20.0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-8)));
+    MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
 
-    shelfTrigger.onTrue(arm.elbowPositionCommand(-108).andThen(arm.shoulderPositionCommand(12.0)));
+    shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 
      cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
      coneIndicatorTrigger.whileTrue(bident.coneCommand());
@@ -218,9 +218,9 @@ public class Robot extends TimedRobot {
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(17).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
+    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
     groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(15).alongWith(intake.getOuttakeCommand()))));
+    groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());
