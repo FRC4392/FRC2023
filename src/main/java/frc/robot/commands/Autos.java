@@ -22,7 +22,7 @@ public final class Autos {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
-            PathPlanner.loadPath("LoadingStation", 3, 1), DriverStation.getAlliance()), true, drivetrain));
+            PathPlanner.loadPath("LoadingStation", 3, 1), DriverStation.getAlliance()), true, drivetrain)).alongWith(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(15).andThen(arm.shoulderPositionCommand(17).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand()))))).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
   }
 
   public static Command getBalanceCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
