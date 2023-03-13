@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.EventMarker;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 public class SwerveDrive {

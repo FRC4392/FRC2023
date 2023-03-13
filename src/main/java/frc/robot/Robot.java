@@ -115,6 +115,8 @@ public class Robot extends TimedRobot {
       default:
         m_autonomousCommand = null;
     }
+
+    arm.updateCurrentState();
     // schedule the autonomous command (example)
     led.setMode(1);
     if (m_autonomousCommand != null) {

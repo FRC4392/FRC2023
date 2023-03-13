@@ -183,6 +183,8 @@ public class Arm extends SubsystemBase {
   public void updateCurrentState(){
     elbowSetpoint = new State(getElbowPostition(), 0);
       shoulderSetpoint = new State(getShoulderPostition(), 0);
+      elbowGoal = elbowSetpoint;
+      shoulderGoal = shoulderSetpoint;
   }
 
   @Override

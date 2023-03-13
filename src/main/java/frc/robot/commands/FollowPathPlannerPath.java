@@ -4,9 +4,13 @@
 
 package frc.robot.commands;
 
+import java.util.List;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.EventMarker;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import edu.wpi.first.util.concurrent.Event;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
@@ -17,6 +21,8 @@ public class FollowPathPlannerPath extends CommandBase {
   PathPlannerTrajectory trajectory;
   Timer timer = new Timer();
   double initTime;
+
+  List<EventMarker> markers;
   /** Creates a new FollowPathPlannerPath. */
   public FollowPathPlannerPath(PathPlannerTrajectory trajectory, boolean initPosition, Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -37,6 +43,8 @@ public class FollowPathPlannerPath extends CommandBase {
       drivetrain.setLocation(initialState.poseMeters.getX(), initialState.poseMeters.getY(), initialState.holonomicRotation.getDegrees());
     }
 
+    markers = trajectory.getMarkers();
+
     timer.reset();
     timer.start();
     initTime = Timer.getFPGATimestamp();
@@ -45,6 +53,9 @@ public class FollowPathPlannerPath extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    for (EventMarker marker : markers) {
+      
+    }
     drivetrain.followPath(initTime, trajectory);
   }
 
