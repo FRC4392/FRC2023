@@ -237,19 +237,19 @@ public class LED extends SubsystemBase {
   }
 
   public Command actuallyCone() {
-    return this.startEnd(() -> setLedCone(), () -> setLedColor());
+    return this.runEnd(() -> setLedCone(), () -> setLedColor());
   }
 
   public Command actuallyCube() {
-    return this.startEnd(() -> setLedCube(), () -> setLedColor());
+    return this.runEnd(() -> setLedCube(), () -> setLedColor());
   }
 
   public Command accyGreem() {
-    return this.startEnd(() -> setLEDGreen(), () -> setLedColor());
+    return this.runEnd(() -> setLEDGreen(), () -> setLedColor());
   }
 
   public Command actuallyColor() {
-    return this.startEnd(() -> setLedColor(), () -> setLedColor());
+    return this.runEnd(() -> setLedColor(), () -> setLedColor());
   }
 
   public void setMode(int mode) {
