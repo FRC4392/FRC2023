@@ -50,6 +50,30 @@ public final class Autos {
         secondPath);
   }
 
+  public static Command getBumpPart1Command(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("Intake", intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
+    eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17))));
+    eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)).andThen(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand()))))));
+    eventMap.put("Retract", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+
+    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("BumpPart1", 5, 2.5);
+
+
+    FollowPathWithEvents firstPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
+      paths.get(0), DriverStation.getAlliance()), true, drivetrain), paths.get(0).getMarkers(), eventMap);
+
+      FollowPathWithEvents secondPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
+      paths.get(1), DriverStation.getAlliance()), true, drivetrain), paths.get(1).getMarkers(), eventMap);
+
+    return Commands.sequence(bident.autoGrabCommand(()->0.1).withTimeout(0.05), arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
+        bident.openCommand().withTimeout(0.1), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
+        firstPath,
+        bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.05),
+        secondPath);
+  }
+
   public static Command getBalanceCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
