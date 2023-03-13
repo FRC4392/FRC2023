@@ -63,6 +63,8 @@ public class Robot extends TimedRobot {
     chooser.addOption("Balance", "Balance");
     chooser.addOption("Bump", "Bump");
 
+    chooser.addOption("BumpPart1", "BumpPart1");
+
     SmartDashboard.putData(chooser);
 
     configureBindings();
@@ -112,6 +114,9 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
+        case "BumpPart1":
+          m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
+          break;
         default:
           m_autonomousCommand = null;
       }
@@ -138,6 +143,9 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
+        case "BumpPart1":
+          m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
+          break;
         default:
           m_autonomousCommand = null;
       }
