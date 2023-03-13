@@ -47,6 +47,9 @@ public class Robot extends TimedRobot {
   LED led = new LED();
 
   SendableChooser<String> chooser = new SendableChooser<>();
+  String selectedAuto;
+
+  
 
   
   /**
@@ -94,28 +97,52 @@ public class Robot extends TimedRobot {
     } else {
       bident.setLEDColor(1, 0, 0);
     }
+
+    if (selectedAuto != chooser.getSelected()){
+      switch(chooser.getSelected()){
+        case "LoadingStation":
+          m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Balance":
+          m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Bump":
+          m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Stupid":
+          m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
+        break;
+        default:
+          m_autonomousCommand = null;
+      }
+      selectedAuto = chooser.getSelected();
+    }
+
+
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    switch(chooser.getSelected()){
-      case "LoadingStation":
-        m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
-      break;
-      case "Balance":
-        m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
-      break;
-      case "Bump":
-        m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
-      break;
-      case "Stupid":
-        m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
-      break;
-      default:
-        m_autonomousCommand = null;
+    if (selectedAuto != chooser.getSelected()){
+      switch(chooser.getSelected()){
+        case "LoadingStation":
+          m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Balance":
+          m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Bump":
+          m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
+        break;
+        case "Stupid":
+          m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
+        break;
+        default:
+          m_autonomousCommand = null;
+      }
+      selectedAuto = chooser.getSelected();
     }
-
     arm.updateCurrentState();
     // schedule the autonomous command (example)
     led.setMode(1);
