@@ -4,15 +4,11 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
-  Servo pivotServo = new Servo(9);
   /** Creates a new Limelight. */
-  public Limelight() {
-    pivotServo.set(0);
-  }
+  public Limelight() {}
 
   @Override
   public void periodic() {
