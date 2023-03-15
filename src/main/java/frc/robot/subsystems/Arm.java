@@ -5,13 +5,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
-
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -29,8 +30,8 @@ public class Arm extends SubsystemBase {
   private static final double dt = 0.02;
   private final RelativeEncoder shoulder1Encoder;
   private final RelativeEncoder elbowEncoder;
+  private final AbsoluteEncoder elbowAbsoluteEncoder;
   private final CANCoder shoulCanCoder = new CANCoder(21);
-  private final CANCoder elbowCanCoder = new CANCoder(22);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
   private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 160);
@@ -57,6 +58,7 @@ public class Arm extends SubsystemBase {
 
     shoulder1Encoder = Shoulder1.getEncoder();
     elbowEncoder = Elbow.getEncoder();
+    elbowAbsoluteEncoder = Elbow.getAbsoluteEncoder(Type.kDutyCycle);
 
     shoulderPID = Shoulder1.getPIDController();
     elbowPID = Elbow.getPIDController();
@@ -69,6 +71,8 @@ public class Arm extends SubsystemBase {
     elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
     elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
+    elbowAbsoluteEncoder.setPositionConversionFactor(0);
+    elbowAbsoluteEncoder.setAverageDepth(1);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
@@ -138,7 +142,7 @@ public class Arm extends SubsystemBase {
   public void setZero() {
     
     shoulder1Encoder.setPosition(shoulCanCoder.getAbsolutePosition());
-    elbowEncoder.setPosition(elbowCanCoder.getAbsolutePosition() - shoulCanCoder.getAbsolutePosition());
+    elbowEncoder.setPosition(getElbowAbsolutePostition() - shoulCanCoder.getAbsolutePosition());
     updateCurrentState();
   }
 
@@ -148,6 +152,16 @@ public class Arm extends SubsystemBase {
 
   public double getShoulderPostition() {
     return shoulder1Encoder.getPosition();
+  }
+
+  public double getElbowAbsolutePostition(){
+    double angle = elbowAbsoluteEncoder.getPosition();
+
+    if (angle > 180){
+      angle -=360;
+    }
+
+    return angle;
   }
 
   public boolean elbowInPostion(){
@@ -174,7 +188,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isZero(){
-    return ((Math.abs(shoulCanCoder.getAbsolutePosition())) < 3 && Math.abs(elbowCanCoder.getAbsolutePosition() - shoulCanCoder.getAbsolutePosition()) < 3);
+    return ((Math.abs(shoulCanCoder.getAbsolutePosition())) < 3 && Math.abs(getElbowAbsolutePostition() - shoulCanCoder.getAbsolutePosition()) < 3);
   }
 
   private void log(){
