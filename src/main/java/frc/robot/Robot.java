@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.resetArmEncoders;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -232,6 +231,9 @@ public class Robot extends TimedRobot {
 
     brake.whileTrue(drivetrain.brakeCommand());
     gripperReady.whileTrue(led.accyGreem());
+    led.setDefaultCommand(led.actuallyColor());
+    Trigger isDisabled = new Trigger(DriverStation::isDisabled);
+    isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));
@@ -243,10 +245,10 @@ public class Robot extends TimedRobot {
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 
-     cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
-     coneIndicatorTrigger.whileTrue(bident.coneCommand());
+    cubeIndicatorTrigger.whileTrue(bident.cubeCommand());
+    coneIndicatorTrigger.whileTrue(bident.coneCommand());
 
-     operatorController.back().whileTrue(arm.resetEncoder());
+    operatorController.back().whileTrue(arm.resetEncoder());
 
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
       

@@ -13,9 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
   /** Creates a new LED. */
-  private int state = 0;
-  // private int m_rainbowFirstPixelHue = 0;
-  private int rainbowtime = 0;
   private int fade = 0;
   private int direction = 0;
   private AddressableLED m_led = new AddressableLED(0);
@@ -31,122 +28,6 @@ public class LED extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (mode == 0) {
-      switch (state) {
-        case 1:
-          // if (rainbowtime < 300) {
-          // rainbow();
-          // rainbowtime++;
-          // } else {
-          // rainbowtime = 0;
-          // i = 0;
-          // state = 2;
-          // }
-          if (rainbowtime < 10000) {
-            setLedFade();
-            rainbowtime++;
-          } else {
-            rainbowtime = 0;
-            i = 0;
-            state = 2;
-          }
-          break;
-        case 2:
-          if (i < 45) {
-            m_ledBuffer.setHSV(i, 0, 0, 0);
-            i++;
-
-          } else {
-            state = 4;
-            i = 0;
-          }
-          break;
-        case 3:
-          if (rainbowtime < 300) {
-            rainbowtime++;
-            for (i = 0; i < m_ledBuffer.getLength(); i++) {
-              m_ledBuffer.setHSV(i, 80, 255, fade);
-            }
-            if (direction == 0) {
-              fade += 4;
-              if (fade == 128) {
-                direction = 1;
-              }
-            } else if (direction == 1) {
-              fade -= 4;
-              if (fade == 0) {
-                direction = 0;
-              }
-            }
-          } else {
-            state = 4;
-            i = 0;
-            fade = 0;
-            direction = 0;
-            rainbowtime = 0;
-          }
-          break;
-        case 4:
-          if (i < 45) {
-            m_ledBuffer.setHSV(i, 0, 0, 0);
-            i++;
-
-          } else {
-            state = 5;
-            i = 0;
-          }
-          break;
-        case 5:
-          if ((i < (m_ledBuffer.getLength() - 1))) {
-            i++;
-            m_ledBuffer.setHSV(i - 1, 0, 0, 0);
-            m_ledBuffer.setRGB(i, 255, 255, 255);
-          } else {
-            state = 6;
-          }
-          break;
-        case 6:
-          if ((i > 1)) {
-            i--;
-            m_ledBuffer.setHSV(i + 1, 0, 0, 0);
-            m_ledBuffer.setRGB(i, 255, 255, 255);
-          } else {
-            state = 7;
-            i = 0;
-          }
-          break;
-        case 7:
-          if ((i < (m_ledBuffer.getLength() - 1))) {
-            i++;
-            m_ledBuffer.setHSV(i - 1, 0, 0, 0);
-            m_ledBuffer.setRGB(i, 255, 255, 255);
-          } else {
-            state = 8;
-          }
-          break;
-        case 8:
-          if ((i > 1)) {
-            i--;
-            m_ledBuffer.setHSV(i + 1, 0, 0, 0);
-            m_ledBuffer.setRGB(i, 255, 255, 255);
-          } else {
-            state = 4;
-            i = 0;
-          }
-          break;
-        default:
-          state = 1;
-
-          break;
-      }
-    } else if (mode == -1) {
-
-    } else {
-      //setLedColor();
-    }
-
-    // Set the data
-    m_led.setData(m_ledBuffer);
   }
 
   // private void rainbow() {
@@ -170,24 +51,28 @@ public class LED extends SubsystemBase {
       // Sets the specified LED to the RGB values for red
       m_ledBuffer.setRGB(i, 255, 0, 255);
     }
+    m_led.setData(m_ledBuffer);
   }
 
   public void setLedCone() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledBuffer.setRGB(i, 255, 255, 0);
     }
+    m_led.setData(m_ledBuffer);
   }
 
   public void setLEDBlack() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledBuffer.setRGB(i, 0, 0, 0);
     }
+    m_led.setData(m_ledBuffer);
   }
 
   public void setLEDGreen() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledBuffer.setRGB(i, 0, 255, 0);
     }
+    m_led.setData(m_ledBuffer);
   }
 
   public void setLedColor() {
@@ -200,6 +85,7 @@ public class LED extends SubsystemBase {
         m_ledBuffer.setRGB(i, 255, 0, 0);
       }
     }
+    m_led.setData(m_ledBuffer);
   }
 
   public void setLedFade() {
@@ -234,6 +120,11 @@ public class LED extends SubsystemBase {
         }
       }
     }
+    m_led.setData(m_ledBuffer);
+  }
+
+  public Command fadeCommand() {
+    return this.run(() -> setLedFade());
   }
 
   public Command actuallyCone() {
