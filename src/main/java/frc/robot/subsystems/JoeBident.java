@@ -12,6 +12,7 @@ import com.ctre.phoenix.CANifier.LEDChannel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,6 +32,11 @@ public class JoeBident extends SubsystemBase {
 
 
   public JoeBident() {
+    CamellaHarris.restoreFactoryDefaults();
+    HunterBident.restoreFactoryDefaults();
+    JillBident.restoreFactoryDefaults();
+
+    
     HunterBident.setInverted(true);
     JillBident.follow(HunterBident, true);
 
@@ -41,6 +47,7 @@ public class JoeBident extends SubsystemBase {
     
     CamellaHarris.setSmartCurrentLimit(15);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
+    CamellaHarris.getReverseLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(true);
     //CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
     //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
     CamellaHarris.setInverted(true);
