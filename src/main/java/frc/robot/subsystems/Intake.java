@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
   private static final double dt = .02;
   private final RelativeEncoder pivotEncoder;
   private final SparkMaxPIDController pivotPID;
-  private final TrapezoidProfile.Constraints pivotProfileConstraints = new Constraints(360, 360*2);
+  private final TrapezoidProfile.Constraints pivotProfileConstraints = new Constraints(360, 360*3);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax pivot = new CANSparkMax(44, MotorType.kBrushless);
   private final CANSparkMax roller = new CANSparkMax(43, MotorType.kBrushless);
@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase {
 
     pivotEncoder.setPositionConversionFactor(360.0/75.23);
 
-    pivotPID.setOutputRange(1, .1);
+    pivotPID.setOutputRange(-1, 1);
 
     kP = 0.1;
     kI = 0.00;

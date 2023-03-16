@@ -3,6 +3,7 @@ package org.deceivers.swerve;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,7 +30,7 @@ public class SwerveDrive {
     private final SwerveModule[] mModules;
     private final int numModules;
     private final SwerveDriveKinematics mKinematics;
-    private final SwerveDriveOdometry mSwerveDriveOdometry;
+    private final SwerveDrivePoseEstimator mSwerveDrivePoseEstimator;
     private final HolonomicDriveController mDriveController;
     private final DoubleSupplier mGyroAngle;
     private final ProfiledPIDController rotationPIDController = new ProfiledPIDController(15,.1,.1,new TrapezoidProfile.Constraints(500, 500));
@@ -67,7 +68,7 @@ public class SwerveDrive {
             states[i] = mModules[i].getPosition();
         }
 
-        mSwerveDriveOdometry = new SwerveDriveOdometry(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, new Pose2d());
+        mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, new Pose2d());
 
         Arrays.stream(mModules).forEach(SwerveModule::init);
     }
@@ -79,7 +80,7 @@ public class SwerveDrive {
             states[i] = mModules[i].getPosition();
         }
 
-        mSwerveDriveOdometry.resetPosition(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, newPose);
+        mSwerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, newPose);
         rotationPIDController.reset(angle);
     }
 
@@ -88,7 +89,11 @@ public class SwerveDrive {
     }
 
     public Pose2d getPose(){
-        return mSwerveDriveOdometry.getPoseMeters();
+        return mSwerveDrivePoseEstimator.getEstimatedPosition();
+    }
+
+    public void updatePoseWithVision(Pose2d newPose, double time){
+        mSwerveDrivePoseEstimator.addVisionMeasurement(newPose, time);
     }
 
     public ChassisSpeeds getChassisSpeeds(){
@@ -138,7 +143,7 @@ public class SwerveDrive {
             states[i] = mModules[i].getPosition();
         }
 
-        return mSwerveDriveOdometry.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
+        return mSwerveDrivePoseEstimator.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
 
     public void followPath(double startTime, PathPlannerTrajectory pptrajectory){
