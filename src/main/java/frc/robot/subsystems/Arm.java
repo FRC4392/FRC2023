@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
     elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
     elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
-    elbowAbsoluteEncoder.setPositionConversionFactor(0);
+    elbowAbsoluteEncoder.setPositionConversionFactor(360);
     elbowAbsoluteEncoder.setAverageDepth(1);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
