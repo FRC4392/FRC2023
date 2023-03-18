@@ -240,8 +240,8 @@ public class Robot extends TimedRobot {
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
     MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-8)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
-    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-12).andThen(arm.shoulderPositionCommand(-20.0)));
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 
