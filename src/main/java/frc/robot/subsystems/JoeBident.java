@@ -11,6 +11,7 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.CANifier.LEDChannel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
@@ -45,11 +46,11 @@ public class JoeBident extends SubsystemBase {
     JillBident.setSmartCurrentLimit(25);
     JillBident.setIdleMode(IdleMode.kBrake);
     
-    CamellaHarris.setSmartCurrentLimit(15);
+    CamellaHarris.setSmartCurrentLimit(10);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
     CamellaHarris.getReverseLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(true);
     //CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
-    //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, false);
     CamellaHarris.setInverted(true);
 
     HunterBident.burnFlash();
@@ -96,7 +97,7 @@ public class JoeBident extends SubsystemBase {
     return this.runEnd(
       () -> {
         if (getGripperProx()){
-          setGripper(.75);
+          setGripper(.6);
         } else {
           setGripper(0);
         }
@@ -122,7 +123,7 @@ public class JoeBident extends SubsystemBase {
     return this.runEnd(
       () -> {
         if (getGripperProx()){
-          setGripper(.5);
+          setGripper(.6);
         } else {
           setGripper(0);
         }
@@ -135,13 +136,38 @@ public class JoeBident extends SubsystemBase {
       }, 
       () -> {
         if (getGripperOccupied() || getGripperProx()){
-          setIntake(.1);
-          setGripper(.1);
+          setIntake(.2);
+          setGripper(.2);
         } else {
           setIntake(0);
           setGripper(0);
         }
       });
+  }
+
+  public Command grabCubeCommand(Double speed){
+    return this.runEnd(() -> {
+      if (getGripperProx()){
+        setGripper(-.1);
+      } else {
+        setGripper(-.1);
+      }
+
+      if(getGripperOccupied()){
+        setIntake(speed *.25);
+      } else {
+        setIntake(speed);
+      }
+    }, 
+    () -> {
+      if (getGripperOccupied() || getGripperProx()){
+        setIntake(.1);
+        setGripper(.1);
+      } else {
+        setIntake(0);
+        setGripper(0);
+      }
+    });
   }
   public Command ejectWhileOpeningCommand(DoubleSupplier speed){
     return this.runEnd(() -> {
