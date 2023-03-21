@@ -59,11 +59,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     chooser.setDefaultOption("Stupid", "Stupid");
-    chooser.addOption("LoadingStation", "LoadingStation");
-    chooser.addOption("Balance", "Balance");
+    chooser.addOption("LoadingStation 2+", "LoadingStaion2P");
+    chooser.addOption("Bump 2+", "Bump2P");
     chooser.addOption("Bump", "Bump");
 
-    chooser.addOption("BumpPart1", "BumpPart1");
+    chooser.addOption("Balance", "Balance");
 
     SmartDashboard.putData(chooser);
 
@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
 
     if (selectedAuto != chooser.getSelected()){
       switch(chooser.getSelected()){
-        case "LoadingStation":
+        case "LoadingStation2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
         break;
         case "Balance":
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
-        case "BumpPart1":
+        case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
           break;
         default:
