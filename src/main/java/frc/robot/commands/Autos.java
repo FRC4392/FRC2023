@@ -29,11 +29,11 @@ public final class Autos {
 
     HashMap<String, Command> eventMap = new HashMap<>();
     eventMap.put("Intake", intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(.75).alongWith(intake.getIntakeCommand())))));
-    eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102)).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
+    eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 5))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
     eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(95)).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(0.75).alongWith(intake.getIntakeCommand())))));
     eventMap.put("Retract", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
 
-    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation", 5, 2.25);
+    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation2P", 5, 2.25);
 
 
     FollowPathWithEvents firstPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
@@ -53,11 +53,11 @@ public final class Autos {
 
     HashMap<String, Command> eventMap = new HashMap<>();
     eventMap.put("Intake", intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(.75).alongWith(intake.getIntakeCommand())))));
-    eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102)).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
+    eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 5))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
     eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(95)).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(0.75).alongWith(intake.getIntakeCommand())))));
     eventMap.put("Retract", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
 
-    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("BumpPart1", 5, 2.25);
+    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("Bump2P", 5, 2.25);
 
 
     FollowPathWithEvents firstPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
