@@ -256,6 +256,8 @@ public class Robot extends TimedRobot {
 
     operatorController.back().whileTrue(arm.resetEncoder());
 
+    operatorController.povDownRight().toggleOnTrue(arm.getManualArmCommand(()->operatorController.getLeftY(), ()->operatorController.getRightTriggerAxis()).alongWith(led.setOrange()));
+
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
       
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));

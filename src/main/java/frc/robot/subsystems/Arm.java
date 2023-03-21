@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,6 +51,8 @@ public class Arm extends SubsystemBase {
 
   private TrapezoidProfile.State elbowGoal = new TrapezoidProfile.State(0, 0);
   private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State(0, 0);
+
+  private boolean manualOverride = false;
 
   /** Creates a new Arm. */
   public Arm() {
@@ -113,6 +118,10 @@ public class Arm extends SubsystemBase {
     Shoulder2.follow(Shoulder1);
     
     setZero();
+  }
+
+  public void setManualOverride(boolean Override){
+    manualOverride = Override;
   }
 
   public void setShoulder(double Velocity) {
@@ -201,6 +210,13 @@ public class Arm extends SubsystemBase {
       shoulderGoal = shoulderSetpoint;
   }
 
+  public Command getManualArmCommand(DoubleSupplier shoulder, DoubleSupplier elbow){
+    return this.runOnce(()->setManualOverride(true)).andThen(()->{
+      setShoulder(shoulder.getAsDouble());
+      setElbow(elbow.getAsDouble());
+    }).finallyDo(terminated -> setManualOverride(false));
+  }
+
   @Override
   public void periodic() {
 
@@ -209,6 +225,7 @@ public class Arm extends SubsystemBase {
     }
     // This method will be called once per scheduler run
 
+    if (!manualOverride){
     TrapezoidProfile profile = new TrapezoidProfile(elbowProfileContraints, elbowGoal, elbowSetpoint);
     elbowSetpoint = profile.calculate(dt);
 
@@ -222,6 +239,7 @@ public class Arm extends SubsystemBase {
     double Shoulderfeedforward = getShoulderGravityFeedForward() + getShoulderVelocityFeedForward(shoulderSetpoint.velocity);
 
     shoulderPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, Shoulderfeedforward);
+    }
 
     log();
   }

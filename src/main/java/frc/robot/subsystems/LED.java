@@ -123,8 +123,19 @@ public class LED extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  public void setLEDOrange(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 255, 128, 0);
+    }
+    m_led.setData(m_ledBuffer);
+  }
+
   public Command fadeCommand() {
     return this.run(() -> setLedFade());
+  }
+
+  public Command setOrange() {
+    return this.runEnd(() -> setLEDOrange(), () -> setLedColor());
   }
 
   public Command actuallyCone() {
