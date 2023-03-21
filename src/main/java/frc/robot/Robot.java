@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
 
   SendableChooser<String> chooser = new SendableChooser<>();
   String selectedAuto;
+  Alliance previouAlliance;
 
   
 
@@ -93,7 +94,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (DriverStation.getAlliance() == Alliance.Blue){
+    if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()){
     bident.setLEDColor(0, 0, 1);
     } else {
       bident.setLEDColor(1, 0, 0);
@@ -120,6 +121,7 @@ public class Robot extends TimedRobot {
           m_autonomousCommand = null;
       }
       selectedAuto = chooser.getSelected();
+      previouAlliance = DriverStation.getAlliance();
     }
 
 
@@ -128,7 +130,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    if (selectedAuto != chooser.getSelected()){
+    if (selectedAuto != chooser.getSelected()  || previouAlliance != DriverStation.getAlliance()){
       switch(chooser.getSelected()){
         case "LoadingStation":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
@@ -149,6 +151,7 @@ public class Robot extends TimedRobot {
           m_autonomousCommand = null;
       }
       selectedAuto = chooser.getSelected();
+      previouAlliance = DriverStation.getAlliance();
     }
     arm.updateCurrentState();
     // schedule the autonomous command (example)
