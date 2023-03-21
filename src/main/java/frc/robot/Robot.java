@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
 
     if (selectedAuto != chooser.getSelected()){
       switch(chooser.getSelected()){
-        case "LoadingStation2P":
+        case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
         break;
         case "Balance":
@@ -135,7 +135,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     if (selectedAuto != chooser.getSelected()  || previouAlliance != DriverStation.getAlliance()){
       switch(chooser.getSelected()){
-        case "LoadingStation":
+        case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
         break;
         case "Balance":
@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
-        case "BumpPart1":
+        case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
           break;
         default:
