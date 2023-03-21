@@ -211,10 +211,10 @@ public class Arm extends SubsystemBase {
   }
 
   public Command getManualArmCommand(DoubleSupplier shoulder, DoubleSupplier elbow){
-    return this.runOnce(()->setManualOverride(true)).andThen(()->{
+    return this.runOnce(()->setManualOverride(true)).andThen(run(()->{
       setShoulder(shoulder.getAsDouble());
       setElbow(elbow.getAsDouble());
-    }).finallyDo(terminated -> setManualOverride(false));
+    })).finallyDo(terminated -> setManualOverride(false));
   }
 
   @Override
