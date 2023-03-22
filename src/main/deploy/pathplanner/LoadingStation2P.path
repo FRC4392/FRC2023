@@ -53,18 +53,18 @@
         "y": 4.425522231933329
       },
       "prevControl": {
-        "x": 6.063213153536725,
-        "y": 4.654231391206142
+        "x": 6.086326555411358,
+        "y": 4.532637297940611
       },
       "nextControl": {
-        "x": 6.063213153536725,
-        "y": 4.654231391206142
+        "x": 6.086326555411358,
+        "y": 4.532637297940611
       },
       "holonomicAngle": 0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -99,12 +99,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.978294896760734,
-        "y": 4.35070306038048
+        "x": 1.9070706233860384,
+        "y": 4.416726608002913
       },
       "prevControl": {
-        "x": 3.8282001350327484,
-        "y": 4.727535608917372
+        "x": 6.041575250875112,
+        "y": 4.432483024878159
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -127,12 +127,6 @@
     {
       "position": 0.0,
       "names": [
-        "event"
-      ]
-    },
-    {
-      "position": 0.0,
-      "names": [
         "Intake"
       ]
     },
@@ -143,15 +137,27 @@
       ]
     },
     {
-      "position": 2.01,
+      "position": 1.99,
+      "names": [
+        "ScoreMove"
+      ]
+    },
+    {
+      "position": 2.02,
       "names": [
         "IntakeAgain"
       ]
     },
     {
-      "position": 3.3,
+      "position": 3.09167258522727,
       "names": [
-        "Retract"
+        "ScoreAgain"
+      ]
+    },
+    {
+      "position": 3.9874556107954553,
+      "names": [
+        "ScoreMoveAgain"
       ]
     }
   ]

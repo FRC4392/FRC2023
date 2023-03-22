@@ -31,7 +31,9 @@ public final class Autos {
     eventMap.put("Intake", intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(.75).alongWith(intake.getIntakeCommand())))));
     eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 5))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
     eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(95)).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(0.75).alongWith(intake.getIntakeCommand())))));
-    eventMap.put("Retract", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+    eventMap.put("ScoreAgain", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 5))).andThen(intake.getIntakePivotCommand(0.0)));
+    eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.15));
+    eventMap.put("ScoreMoveAgain", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.15));
 
     List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation2P", 5, 2.25);
 
@@ -39,14 +41,9 @@ public final class Autos {
     FollowPathWithEvents firstPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
       paths.get(0), DriverStation.getAlliance()), true, drivetrain), paths.get(0).getMarkers(), eventMap);
 
-      FollowPathWithEvents secondPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
-      paths.get(1), DriverStation.getAlliance()), true, drivetrain), paths.get(1).getMarkers(), eventMap);
-
     return Commands.sequence(arm.resetEncoder(), bident.autoGrabCommand(()->0.1).withTimeout(0.05).raceWith(intake.getIntakePivotCommand(95)), arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(0.1), bident.openCommand().raceWith(arm.shoulderPositionCommand(0.0)),
-        firstPath,
-        bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.1),
-        secondPath);
+        firstPath);
   }
 
   public static Command getBumpPart1Command(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
