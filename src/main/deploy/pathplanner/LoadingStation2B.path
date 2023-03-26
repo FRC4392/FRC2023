@@ -53,12 +53,12 @@
         "y": 4.369259835877528
       },
       "prevControl": {
-        "x": 6.070224928942697,
-        "y": 4.631619126872152
+        "x": 6.354406721400249,
+        "y": 4.842995219410578
       },
       "nextControl": {
-        "x": 6.070224928942697,
-        "y": 4.631619126872152
+        "x": 6.354406721400249,
+        "y": 4.842995219410578
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -74,19 +74,19 @@
     },
     {
       "anchorPoint": {
-        "x": 6.959536487106829,
-        "y": 3.540222235148246
+        "x": 5.432818519282872,
+        "y": 3.13010780180089
       },
       "prevControl": {
-        "x": 6.083831260869987,
-        "y": 4.617672115661072
+        "x": 8.50139378170925,
+        "y": 3.898154824722147
       },
       "nextControl": {
-        "x": 6.083831260869987,
-        "y": 4.617672115661072
+        "x": 4.787150636991162,
+        "y": 2.9685007847391995
       },
-      "holonomicAngle": -49.82076607809261,
-      "isReversal": true,
+      "holonomicAngle": 0,
+      "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -99,12 +99,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8672636987743594,
-        "y": 4.079218540951188
+        "x": 3.3414037991541696,
+        "y": 3.011480738212127
       },
       "prevControl": {
-        "x": 6.057904298886939,
-        "y": 4.243972311078303
+        "x": 4.199159938657331,
+        "y": 3.0079480027666654
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -120,9 +120,6 @@
       }
     }
   ],
-  "maxVelocity": 5.0,
-  "maxAcceleration": 2.0,
-  "isReversed": null,
   "markers": [
     {
       "position": 0.0,
@@ -133,7 +130,7 @@
     {
       "position": 1.0,
       "names": [
-        "ScorePosition"
+        "Scoring Position"
       ]
     },
     {
@@ -143,21 +140,9 @@
       ]
     },
     {
-      "position": 2.02,
+      "position": 2.1,
       "names": [
-        "IntakeAgain"
-      ]
-    },
-    {
-      "position": 3.09167258522727,
-      "names": [
-        "ScoreAgain"
-      ]
-    },
-    {
-      "position": 3.9874556107954553,
-      "names": [
-        "ScoreMoveAgain"
+        "Retract"
       ]
     }
   ]

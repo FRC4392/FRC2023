@@ -96,6 +96,7 @@ public class JoeBident extends SubsystemBase {
   public Command autoGrabCommand(DoubleSupplier speed){
     return this.runEnd(
       () -> {
+        setLEDColor(0, 255, 0);
         if (getGripperProx()){
           setGripper(.6);
         } else {
@@ -109,9 +110,10 @@ public class JoeBident extends SubsystemBase {
         }
       }, 
       () -> {
+        setLEDColor(0, 0, 0);
         if (getGripperOccupied()){
-          setIntake(.2);
-          setGripper(.2);
+          setIntake(.3);
+          setGripper(.3);
         } else {
           setIntake(0);
           setGripper(0);
@@ -122,6 +124,7 @@ public class JoeBident extends SubsystemBase {
   public Command autoIntakeCommand(Double speed){
     return this.runEnd(
       () -> {
+        setLEDColor(0, 255, 0);
         if (getGripperProx()){
           setGripper(.6);
         } else {
@@ -135,6 +138,7 @@ public class JoeBident extends SubsystemBase {
         }
       }, 
       () -> {
+        setLEDColor(0, 0, 0);
         if (getGripperOccupied() || getGripperProx()){
           setIntake(.2);
           setGripper(.2);
@@ -147,10 +151,11 @@ public class JoeBident extends SubsystemBase {
 
   public Command grabCubeCommand(Double speed){
     return this.runEnd(() -> {
+      setLEDColor(0, 255, 0);
       if (getGripperProx()){
-        setGripper(-.1);
+        setGripper(-.2);
       } else {
-        setGripper(-.1);
+        setGripper(-.2);
       }
 
       if(getGripperOccupied()){
@@ -160,9 +165,10 @@ public class JoeBident extends SubsystemBase {
       }
     }, 
     () -> {
+      setLEDColor(0, 0, 0);
       if (getGripperOccupied() || getGripperProx()){
-        setIntake(.1);
-        setGripper(.1);
+        setIntake(.25);
+        setGripper(.2);
       } else {
         setIntake(0);
         setGripper(0);

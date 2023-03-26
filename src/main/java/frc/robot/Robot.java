@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
     chooser.addOption("LoadingStation 2+", "LoadingStaion2P");
     chooser.addOption("Bump 2+", "Bump2P");
     chooser.addOption("Bump", "Bump");
+    chooser.addOption("LoadingStation Balance", "LoadingStation2B");
 
     chooser.addOption("Balance", "Balance");
 
@@ -120,6 +121,9 @@ public class Robot extends TimedRobot {
         case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
           break;
+        case "LoadingStation2B":
+          m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
+          break;
         default:
           m_autonomousCommand = null;
       }
@@ -149,6 +153,9 @@ public class Robot extends TimedRobot {
         break;
         case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
+          break;
+        case "LoadingStation2B":
+          m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
           break;
         default:
           m_autonomousCommand = null;
@@ -242,12 +249,12 @@ public class Robot extends TimedRobot {
     isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-133.0).andThen(arm.shoulderPositionCommand(-37.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
     MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-8)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 
@@ -265,9 +272,9 @@ public class Robot extends TimedRobot {
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(13.75).andThen(arm.shoulderPositionCommand(20).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand())))));
+    groundIntake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(13.75).andThen(arm.shoulderPositionCommand(20).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand())))));
     groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
+    groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());

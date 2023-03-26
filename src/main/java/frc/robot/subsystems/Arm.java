@@ -174,10 +174,10 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean elbowInPostion(){
-    return Math.abs(elbowSetpoint.position - elbowGoal.position) < 3;
+    return Math.abs(elbowSetpoint.position - elbowGoal.position) < 1;
   }
   public boolean shoulderInPostion(){
-    return Math.abs(shoulderSetpoint.position - shoulderGoal.position) < 3;
+    return Math.abs(shoulderSetpoint.position - shoulderGoal.position) < 1;
   }
 
   public void doNothing(){

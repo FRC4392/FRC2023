@@ -96,7 +96,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command getIntakePivotCommand(double angle){
-    return this.startEnd(() -> setAngle(angle), () -> doNothing()).until(() -> pivotInPosition());
+    return this.startEnd(() -> setAngle(angle-2), () -> doNothing()).until(() -> pivotInPosition());
   }
 
   public boolean pivotInPosition() {
