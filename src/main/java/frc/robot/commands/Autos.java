@@ -28,9 +28,10 @@ public final class Autos {
   public static Command getLoadingStationCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
 
     HashMap<String, Command> eventMap = new HashMap<>();
-    eventMap.put("Intake", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.grabCubeCommand(.75).alongWith(intake.getIntakeCommand())))));
+    eventMap.put("Intake", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(15.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(.75).alongWith(intake.getIntakeCommand()))))));
     eventMap.put("ScorePosition", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17)));
-    eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(13.5).andThen(arm.shoulderPositionCommand(20).alongWith(bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand())))));
+    eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(15.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()))))));
+    
     eventMap.put("ScoreAgain", arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)));
     eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
     eventMap.put("ScoreMoveAgain", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));

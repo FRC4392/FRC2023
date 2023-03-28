@@ -272,12 +272,11 @@ public class Robot extends TimedRobot {
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(13.75).andThen(arm.shoulderPositionCommand(20).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand())))));
-    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(15.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController, limelight));
   }
 }
