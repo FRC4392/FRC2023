@@ -140,17 +140,17 @@ public class DriveCommand extends CommandBase {
     if (!mController.getYButton()) {
       
       mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
-    } else { //Otherwise, do limelight stuff
+    } else if(mLimelight.getTV()) { //Otherwise, do limelight stuff
       Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
 
      SmartDashboard.putNumber("WowzaAngle", Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()));
      SmartDashboard.putNumber("cameraAngle",camPos.getRotation().getRadians());
      SmartDashboard.putNumber("driveTrainAngle",Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
-     SmartDashboard.putNumber("yDiff",-camPos.getY());
-     SmartDashboard.putNumber("xDiff",-camPos.getX());
+     SmartDashboard.putNumber("yDiff",camPos.getY());
+     SmartDashboard.putNumber("xDiff",camPos.getX());
 
      //if the magnitude of the difference in angles is greater than 6 degrees, align with the apriltag
-      if (Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(6.0)) {
+      if (Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(3.0)) {
 
         rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(),
             -camPos.getRotation().getRadians());
@@ -160,7 +160,7 @@ public class DriveCommand extends CommandBase {
       }
 
       //X direction is arm direction on robot, y direction is out from the apriltag
-      xVel = strafeController.calculate(camPos.getY(),-1.0); //currently set to -1 cause that's what smart dashboard said when we were roughly lined up
+      xVel = strafeController.calculate(camPos.getY(),7.0); //currently set to 7 cause that's what smart dashboard said when we were roughly lined up
 
       mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative); 
     }

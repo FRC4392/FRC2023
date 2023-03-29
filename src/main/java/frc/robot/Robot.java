@@ -28,7 +28,7 @@ import frc.robot.subsystems.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * each , as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
@@ -93,12 +93,12 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    led.setMode(0);
+    led.isEnabled = false;
   }
 
   @Override
   public void disabledPeriodic() {
-    if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()){
+     if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()){
     bident.setLEDColor(0, 0, 1);
     } else {
       bident.setLEDColor(1, 0, 0);
@@ -165,7 +165,7 @@ public class Robot extends TimedRobot {
     }
     arm.updateCurrentState();
     // schedule the autonomous command (example)
-    led.setMode(1);
+    led.isEnabled = true;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -183,7 +183,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    led.setMode(2);
+    led.isEnabled = true;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -244,9 +244,9 @@ public class Robot extends TimedRobot {
 
     brake.whileTrue(drivetrain.brakeCommand());
     gripperReady.whileTrue(led.accyGreem());
-    led.setDefaultCommand(led.actuallyColor());
-    Trigger isDisabled = new Trigger(() -> isDisabled());
-    isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
+    //led.setDefaultCommand(led.actuallyColor());
+   // Trigger isDisabled = new Trigger(() -> isDisabled());
+   // isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-133.0).andThen(arm.shoulderPositionCommand(-37.0)));
@@ -270,6 +270,7 @@ public class Robot extends TimedRobot {
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
+    operatorController.leftTrigger(0).onFalse(bident.actuallyNeutral());
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
     groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(15.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));

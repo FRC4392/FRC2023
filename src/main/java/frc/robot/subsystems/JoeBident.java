@@ -92,11 +92,25 @@ public class JoeBident extends SubsystemBase {
     setIntake(0);
     setGripper(0);
   }
-
+int flashy = 0;
+int no = 0;
   public Command autoGrabCommand(DoubleSupplier speed){
+
     return this.runEnd(
       () -> {
-        setLEDColor(0, 255, 0);
+        
+        if(no == 1){
+          flashy++;
+         setNeutral();
+        } else {
+          flashy--;
+          setLEDColor(0, 0, 0);
+        }
+        if(flashy > 10){
+          no = 0;
+        } else if(flashy<0){
+          no = 1;
+        }
         if (getGripperProx()){
           setGripper(.6);
         } else {
@@ -209,10 +223,10 @@ public class JoeBident extends SubsystemBase {
   }
 
   public void setNeutral(){
-    if (DriverStation.getAlliance() == Alliance.Blue){
-    setLEDColor(0, 0, 1);
+    if (DriverStation.getAlliance() == Alliance.Red){
+    setLEDColor(1, 0, 0);
     } else {
-      setLEDColor(1, 0, 0);
+      setLEDColor(0, 0, 1);
     }
   }
 
@@ -223,6 +237,11 @@ public class JoeBident extends SubsystemBase {
   public Command coneCommand(){
     return this.run(() -> setCone());
   }
+
+  public Command actuallyNeutral(){
+    return this.run(() -> setNeutral());
+  }
+
 
   @Override
   public void periodic() {

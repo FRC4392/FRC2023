@@ -19,6 +19,10 @@ public class Limelight extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public boolean getTV(){
+    return LimelightHelpers.getTV("");
+  }
+  
   public Pose2d getPose(){
     return LimelightHelpers.getBotPose2d_wpiRed("");
   }
