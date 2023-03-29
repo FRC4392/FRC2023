@@ -24,10 +24,12 @@ public class Limelight extends SubsystemBase {
   }
   
   public Pose2d getPose(){
-    return LimelightHelpers.getBotPose2d_wpiRed("");
+    return LimelightHelpers.getBotPose2d_wpiBlue("");
   }
   
-
+public double getFid(){
+  return LimelightHelpers.getFiducialID("");
+}
   public double getTimeStamp(){
     return Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0)+(LimelightHelpers.getLatency_Capture("")/1000.0);
   }

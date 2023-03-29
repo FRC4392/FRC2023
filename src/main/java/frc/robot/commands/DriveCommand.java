@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import java.io.Serial;
 
+import org.deceivers.drivers.LimelightHelpers;
 import org.deceivers.util.JoystickHelper;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -45,6 +46,8 @@ public class DriveCommand extends CommandBase {
   private SlewRateLimiter xfilter = new SlewRateLimiter(3);
   private SlewRateLimiter yfilter = new SlewRateLimiter(3);
   private SlewRateLimiter rotfilter = new SlewRateLimiter(3);
+
+  private int nodeIndex = 5;
 
   public DriveCommand(Drivetrain Drivetrain, XboxController XboxController, Limelight limelight) {
     mDrivetrain = Drivetrain;
@@ -135,34 +138,67 @@ public class DriveCommand extends CommandBase {
     // }
 
     boolean fieldRelative = !mController.getAButton();
-
     //When y button is not pressed, do normal drivetrain things
-    if (!mController.getYButton()) {
-      
+    if (!mController.getYButton() || !mLimelight.getTV()){
+
       mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
-    } else if(mLimelight.getTV()) { //Otherwise, do limelight stuff
-      Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
+    
+    } else if (mLimelight.getTV()){ //Otherwise, do limelight stuff
+        //Initialize the selected node to the one in front of the robot when the button is pressed
+        if(mController.getYButtonPressed()){
+          switch((int)mLimelight.getFid()){
+            case 1:
+                nodeIndex = 1;
+                break;
+            case 2:
+                nodeIndex = 4;
+                break;
+            case 3:
+                nodeIndex = 7;
+                break;
+            case 8:
+                nodeIndex = 1;
+                break;
+            case 7:
+                nodeIndex = 4;
+                break;
+            case 6:
+                nodeIndex = 7;
+                break;
+          }
+        }
 
-     SmartDashboard.putNumber("WowzaAngle", Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()));
-     SmartDashboard.putNumber("cameraAngle",camPos.getRotation().getRadians());
-     SmartDashboard.putNumber("driveTrainAngle",Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
-     SmartDashboard.putNumber("yDiff",camPos.getY());
-     SmartDashboard.putNumber("xDiff",camPos.getX());
+        //when controller bumpers pressed, index through the node positions
+        //index goes 0-8
+        if((mController.getRightBumperPressed()) && (nodeIndex < 8)){
+          nodeIndex++;
+        } else if(mController.getLeftBumperPressed() && (nodeIndex > 0)){
+          nodeIndex--;
+        }
+        
+        SmartDashboard.putNumber("TargetNode",nodeIndex);
+        Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
+        SmartDashboard.putNumber("XDiff",camPos.getY());
+        SmartDashboard.putNumber("DesiredPosition", 0.513+nodeIndex*.5588);
+        //if the magnitude of the difference in angles is greater than 3 degrees, align with the apriltag
+        if ((Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(3.0)) && (camPos.getRotation().getRadians() != 0.0)) {
 
-     //if the magnitude of the difference in angles is greater than 6 degrees, align with the apriltag
-      if (Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(3.0)) {
-
-        rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(),
-            -camPos.getRotation().getRadians());
-
-      } else{
-        rotVel = 0.0;
-      }
-
-      //X direction is arm direction on robot, y direction is out from the apriltag
-      xVel = strafeController.calculate(camPos.getY(),7.0); //currently set to 7 cause that's what smart dashboard said when we were roughly lined up
-
-      mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative); 
+         // rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), -camPos.getRotation().getRadians());
+        } else{
+            rotVel = 0.0;
+        }
+        SmartDashboard.putNumber("RotDiff",Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians()- camPos.getRotation().getRadians());
+        SmartDashboard.putNumber("CameraRotation:", camPos.getRotation().getRadians());
+        SmartDashboard.putNumber("DrivetrainAngle", Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
+        SmartDashboard.putNumber(("Yoffset"), Math.abs(camPos.getY() - (0.513+nodeIndex*0.5588)));
+        if(Math.abs(camPos.getY() - 0.513+nodeIndex*0.5588) > 0.2){
+          xVel = strafeController.calculate(camPos.getY(), 0.513+nodeIndex*0.5588);
+        } else{
+          xVel = 0.0;
+        }
+        
+        //X direction is arm direction on robot, y direction is out from the apriltag
+        mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative); 
     }
 
     // mDrivetrain.drive(yVel,xVel, rotVel, fieldRelative);

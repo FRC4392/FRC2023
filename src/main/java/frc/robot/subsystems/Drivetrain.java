@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.revrobotics.CANSparkMax;
@@ -29,7 +30,7 @@ public class Drivetrain extends SubsystemBase {
     private final CANSparkMax mAzimuth3 = new CANSparkMax(16, MotorType.kBrushless);
     private final CANSparkMax mAzimuth4 = new CANSparkMax(18, MotorType.kBrushless);
 
-    private final PigeonIMU pidgey = new PigeonIMU(10);
+    private final Pigeon2 pidgey = new Pigeon2(10);
 
     private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(-0.3031744, 0.3031744), "Module 1");
     private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(0.3031744, 0.3031744), "Module 2");
@@ -41,7 +42,7 @@ public class Drivetrain extends SubsystemBase {
     private double gyroOffset = 0;
 
   public Drivetrain() {
-    pidgey.setFusedHeading(0);
+    pidgey.setYaw(0);
     mDriveMotor1.enableVoltageCompensation(11);
     mDriveMotor2.enableVoltageCompensation(11);
     mDriveMotor3.enableVoltageCompensation(11);
@@ -92,11 +93,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setGyro(double position){
-      gyroOffset = (position - pidgey.getFusedHeading());
+      gyroOffset = (position - pidgey.getYaw());
     }
   
     public double getRotation() {
-      return pidgey.getFusedHeading() + gyroOffset;
+      return pidgey.getYaw() + gyroOffset;
     }
   
     public double getYaw() {
