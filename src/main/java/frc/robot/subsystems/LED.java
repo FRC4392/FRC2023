@@ -18,7 +18,9 @@ public class LED extends SubsystemBase {
   private AddressableLED m_led = new AddressableLED(0);
   private AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(45);
   private int i = 0;
+  public int time = 0;
   private int mode = 0;
+  public boolean isEnabled = false;
 
   public LED() {
     m_led.setLength(m_ledBuffer.getLength());
@@ -27,7 +29,11 @@ public class LED extends SubsystemBase {
 
   @Override
   public void periodic() {
-
+ if (isEnabled == false) {
+  setLedFade();
+  } else {
+ setLedColor();
+}
   }
 
   // private void rainbow() {
@@ -89,6 +95,8 @@ public class LED extends SubsystemBase {
   }
 
   public void setLedFade() {
+    if(time<10000) {
+      time ++;
     if (DriverStation.getAlliance() == Alliance.Blue) {
       for (i = 0; i < m_ledBuffer.getLength(); i++) {
         m_ledBuffer.setHSV(i, 80, 255, fade);
@@ -120,11 +128,41 @@ public class LED extends SubsystemBase {
         }
       }
     }
+  } else {
+      time ++;
+
+      if(direction == 1){
+        i++;
+        m_ledBuffer.setHSV(i,0,255,255);
+        m_ledBuffer.setHSV(i-1,0,255,0);
+      } else {
+        i--;
+        m_ledBuffer.setHSV(i,0,255,255);
+        m_ledBuffer.setHSV(i+1,0,255,0);
+      }
+      if(i > 36){
+        direction = 0;
+      } else if(i<3){
+        direction = 1;
+      }
+
+  }
+    m_led.setData(m_ledBuffer);
+  }
+
+  public void setLEDOrange(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 255, 128, 0);
+    }
     m_led.setData(m_ledBuffer);
   }
 
   public Command fadeCommand() {
     return this.run(() -> setLedFade());
+  }
+
+  public Command setOrange() {
+    return this.runEnd(() -> setLEDOrange(), () -> setLedColor());
   }
 
   public Command actuallyCone() {

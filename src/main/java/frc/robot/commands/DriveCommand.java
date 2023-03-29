@@ -7,20 +7,28 @@
 
 package frc.robot.commands;
 
+import java.io.Serial;
+
 import org.deceivers.util.JoystickHelper;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Limelight;
 
 public class DriveCommand extends CommandBase {
   public final Drivetrain mDrivetrain;
   public XboxController mController;
+  public CommandXboxController opController;
+  public Limelight mLimelight;
   private boolean lastScan;
 
   private JoystickHelper xHelper = new JoystickHelper(0);
@@ -29,17 +37,21 @@ public class DriveCommand extends CommandBase {
   private JoystickHelper xrHelper = new JoystickHelper(0);
   private JoystickHelper yrHelper = new JoystickHelper(0);
   private double driveFactor = 1;
-  private PIDController rotationController = new PIDController(0.4,.0,.0);
+  private PIDController rotationController = new PIDController(0.4, .0, .0);
+
+  private PIDController limController = new PIDController(0.3, 0.0, 0.0);
+  private PIDController strafeController = new PIDController(0.3,0,0);
+
   private SlewRateLimiter xfilter = new SlewRateLimiter(3);
   private SlewRateLimiter yfilter = new SlewRateLimiter(3);
   private SlewRateLimiter rotfilter = new SlewRateLimiter(3);
 
-  public DriveCommand(Drivetrain Drivetrain, XboxController XboxController) {
+  public DriveCommand(Drivetrain Drivetrain, XboxController XboxController, Limelight limelight) {
     mDrivetrain = Drivetrain;
     mController = XboxController;
-
+    mLimelight = limelight;
     rotationController.enableContinuousInput(-Math.PI, Math.PI);
-    
+
     addRequirements(mDrivetrain);
   }
 
@@ -47,7 +59,7 @@ public class DriveCommand extends CommandBase {
   @Override
   public void initialize() {
   }
- 
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -63,14 +75,14 @@ public class DriveCommand extends CommandBase {
     yrVel = mController.getRightY();
     xrVel = mController.getRightX();
 
-    //slow down `on
-    if(mController.getRightBumper()){
+    // slow down `on
+    if (mController.getRightBumper()) {
       driveFactor = 0.5;
     } else {
       driveFactor = 1.0;
     }
 
-    if(DriverStation.isTeleop() && (DriverStation.getMatchTime() < 40.0) && (DriverStation.getMatchTime()>39)){
+    if (DriverStation.isTeleop() && (DriverStation.getMatchTime() < 40.0) && (DriverStation.getMatchTime() > 39.0)) {
       mController.setRumble(RumbleType.kLeftRumble, 1);
       mController.setRumble(RumbleType.kRightRumble, 1);
     } else {
@@ -85,47 +97,77 @@ public class DriveCommand extends CommandBase {
 
     yrVel = yrHelper.setInput(yrVel).applyPower(yrVel).value;
     xrVel = xrHelper.setInput(xrVel).applyPower(yrVel).value;
-    
-    yVel = yVel*driveFactor;
-    xVel = xVel*driveFactor;
-    rotVel = rotVel*driveFactor;
+
+    yVel = yVel * driveFactor;
+    xVel = xVel * driveFactor;
+    rotVel = rotVel * driveFactor;
 
     Rotation2d joystickAngle = Rotation2d.fromRadians(Math.atan2(-mController.getRightX(), -mController.getRightY()));
-    if (!mController.getLeftBumper()){
+    if (!mController.getLeftBumper()) {
       joystickAngle = joystickAngle.plus(Rotation2d.fromDegrees(180));
     }
 
-    double joystickMagnitude = Math.sqrt((mController.getRightY()*mController.getRightY()) + (mController.getRightX()*mController.getRightX()));
-     if (joystickMagnitude > .1){
-       rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), joystickAngle.getRadians());
-      if (Math.abs(rotVel) > joystickMagnitude){
-        rotVel = joystickMagnitude*Math.signum(rotVel);
+    double joystickMagnitude = Math.sqrt(
+        (mController.getRightY() * mController.getRightY()) + (mController.getRightX() * mController.getRightX()));
+    if (joystickMagnitude > .1) {
+      rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(),
+          joystickAngle.getRadians());
+      if (Math.abs(rotVel) > joystickMagnitude) {
+        rotVel = joystickMagnitude * Math.signum(rotVel);
       }
     }
 
-    rotVel = -rotVel; //controls were inverted
+    rotVel = -rotVel; // controls were inverted
 
-    if (mController.getRawButton(7) &! lastScan){
+    if (mController.getRawButton(7) & !lastScan) {
       mDrivetrain.resetGyro();
     }
     lastScan = mController.getRawButton(7);
 
-    //boolean fieldRelative = !(mController.getRightTriggerAxis()>0);
-    //boolean fieldRelative = true;
+    // boolean fieldRelative = !(mController.getRightTriggerAxis()>0);
+    // boolean fieldRelative = true;
 
     // if (fieldRelative){
-    //   mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
+    // mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel),
+    // rotfilter.calculate(rotVel), fieldRelative);
     // } else {
-    //   mDrivetrain.drive(yVel*-1, xVel*-1, rotVel, fieldRelative);
+    // mDrivetrain.drive(yVel*-1, xVel*-1, rotVel, fieldRelative);
     // }
 
     boolean fieldRelative = !mController.getAButton();
-    mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
 
-    
-//  mDrivetrain.drive(yVel,xVel, rotVel, fieldRelative);
+    //When y button is not pressed, do normal drivetrain things
+    if (!mController.getYButton()) {
+      
+      mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative);
+    } else if(mLimelight.getTV()) { //Otherwise, do limelight stuff
+      Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
 
-    //mDrivetrain.setModulesAngle(xVel);
+     SmartDashboard.putNumber("WowzaAngle", Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()));
+     SmartDashboard.putNumber("cameraAngle",camPos.getRotation().getRadians());
+     SmartDashboard.putNumber("driveTrainAngle",Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
+     SmartDashboard.putNumber("yDiff",camPos.getY());
+     SmartDashboard.putNumber("xDiff",camPos.getX());
+
+     //if the magnitude of the difference in angles is greater than 6 degrees, align with the apriltag
+      if (Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(3.0)) {
+
+        rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(),
+            -camPos.getRotation().getRadians());
+
+      } else{
+        rotVel = 0.0;
+      }
+
+      //X direction is arm direction on robot, y direction is out from the apriltag
+      xVel = strafeController.calculate(camPos.getY(),7.0); //currently set to 7 cause that's what smart dashboard said when we were roughly lined up
+
+      mDrivetrain.drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotfilter.calculate(rotVel), fieldRelative); 
+    }
+
+    // mDrivetrain.drive(yVel,xVel, rotVel, fieldRelative);
+
+    // mDrivetrain.setModulesAngle(xVel);
   }
 
   // Called once the command ends or is interrupted.

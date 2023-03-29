@@ -28,7 +28,7 @@ import frc.robot.subsystems.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * each , as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
 
   SendableChooser<String> chooser = new SendableChooser<>();
   String selectedAuto;
+  Alliance previouAlliance;
 
   
 
@@ -58,11 +59,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     chooser.setDefaultOption("Stupid", "Stupid");
-    chooser.addOption("LoadingStation", "LoadingStation");
-    chooser.addOption("Balance", "Balance");
+    chooser.addOption("LoadingStation 2+", "LoadingStaion2P");
+    chooser.addOption("Bump 2+", "Bump2P");
     chooser.addOption("Bump", "Bump");
+    chooser.addOption("LoadingStation Balance", "LoadingStation2B");
 
-    chooser.addOption("BumpPart1", "BumpPart1");
+    chooser.addOption("Balance", "Balance");
 
     SmartDashboard.putData(chooser);
 
@@ -82,18 +84,21 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+
+    SmartDashboard.putString("Selected Auto", selectedAuto);
+    SmartDashboard.putString("Alliance Color", previouAlliance.name());
     CommandScheduler.getInstance().run();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    led.setMode(0);
+    led.isEnabled = false;
   }
 
   @Override
   public void disabledPeriodic() {
-    if (DriverStation.getAlliance() == Alliance.Blue){
+     if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()){
     bident.setLEDColor(0, 0, 1);
     } else {
       bident.setLEDColor(1, 0, 0);
@@ -101,7 +106,7 @@ public class Robot extends TimedRobot {
 
     if (selectedAuto != chooser.getSelected()){
       switch(chooser.getSelected()){
-        case "LoadingStation":
+        case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
         break;
         case "Balance":
@@ -113,13 +118,17 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
-        case "BumpPart1":
+        case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
+          break;
+        case "LoadingStation2B":
+          m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
           break;
         default:
           m_autonomousCommand = null;
       }
       selectedAuto = chooser.getSelected();
+      previouAlliance = DriverStation.getAlliance();
     }
 
 
@@ -128,9 +137,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    if (selectedAuto != chooser.getSelected()){
+    if (selectedAuto != chooser.getSelected()  || previouAlliance != DriverStation.getAlliance()){
       switch(chooser.getSelected()){
-        case "LoadingStation":
+        case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
         break;
         case "Balance":
@@ -142,17 +151,21 @@ public class Robot extends TimedRobot {
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
         break;
-        case "BumpPart1":
+        case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
+          break;
+        case "LoadingStation2B":
+          m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
           break;
         default:
           m_autonomousCommand = null;
       }
       selectedAuto = chooser.getSelected();
+      previouAlliance = DriverStation.getAlliance();
     }
     arm.updateCurrentState();
     // schedule the autonomous command (example)
-    led.setMode(1);
+    led.isEnabled = true;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -170,7 +183,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    led.setMode(2);
+    led.isEnabled = true;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -231,17 +244,17 @@ public class Robot extends TimedRobot {
 
     brake.whileTrue(drivetrain.brakeCommand());
     gripperReady.whileTrue(led.accyGreem());
-    led.setDefaultCommand(led.actuallyColor());
-    Trigger isDisabled = new Trigger(DriverStation::isDisabled);
-    isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
+    //led.setDefaultCommand(led.actuallyColor());
+   // Trigger isDisabled = new Trigger(() -> isDisabled());
+   // isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
 
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-132.0).andThen(arm.shoulderPositionCommand(-37.0)));
+    highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-133.0).andThen(arm.shoulderPositionCommand(-37.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
     MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-8)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
-    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-40).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
+    lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 
@@ -250,19 +263,21 @@ public class Robot extends TimedRobot {
 
     operatorController.back().whileTrue(arm.resetEncoder());
 
+    operatorController.povRight().toggleOnTrue(arm.getManualArmCommand(()->operatorController.getLeftY(), ()->operatorController.getRightY()).alongWith(led.setOrange()));
+
     DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
       
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
     operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
+    operatorController.leftTrigger(0).onFalse(bident.actuallyNeutral());
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(20).alongWith(bident.autoIntakeCommand(0.5).alongWith(intake.getIntakeCommand())))));
-    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
-    groundOuttake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
+    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(15.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    groundIntake.onFalse(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+    groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController, limelight));
   }
 }

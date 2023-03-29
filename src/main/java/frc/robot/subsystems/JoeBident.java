@@ -11,6 +11,7 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.CANifier.LEDChannel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
@@ -45,11 +46,11 @@ public class JoeBident extends SubsystemBase {
     JillBident.setSmartCurrentLimit(25);
     JillBident.setIdleMode(IdleMode.kBrake);
     
-    CamellaHarris.setSmartCurrentLimit(15);
+    CamellaHarris.setSmartCurrentLimit(10);
     CamellaHarris.setIdleMode(IdleMode.kBrake);
     CamellaHarris.getReverseLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(true);
     //CamellaHarris.setSoftLimit(SoftLimitDirection.kReverse, 0);
-    //CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    CamellaHarris.enableSoftLimit(SoftLimitDirection.kReverse, false);
     CamellaHarris.setInverted(true);
 
     HunterBident.burnFlash();
@@ -91,12 +92,27 @@ public class JoeBident extends SubsystemBase {
     setIntake(0);
     setGripper(0);
   }
-
+int flashy = 0;
+int no = 0;
   public Command autoGrabCommand(DoubleSupplier speed){
+
     return this.runEnd(
       () -> {
+        
+        if(no == 1){
+          flashy++;
+         setNeutral();
+        } else {
+          flashy--;
+          setLEDColor(0, 0, 0);
+        }
+        if(flashy > 10){
+          no = 0;
+        } else if(flashy<0){
+          no = 1;
+        }
         if (getGripperProx()){
-          setGripper(.75);
+          setGripper(.6);
         } else {
           setGripper(0);
         }
@@ -108,9 +124,10 @@ public class JoeBident extends SubsystemBase {
         }
       }, 
       () -> {
+        setLEDColor(0, 0, 0);
         if (getGripperOccupied()){
-          setIntake(.2);
-          setGripper(.2);
+          setIntake(.3);
+          setGripper(.3);
         } else {
           setIntake(0);
           setGripper(0);
@@ -121,8 +138,9 @@ public class JoeBident extends SubsystemBase {
   public Command autoIntakeCommand(Double speed){
     return this.runEnd(
       () -> {
+        setLEDColor(0, 255, 0);
         if (getGripperProx()){
-          setGripper(.5);
+          setGripper(.6);
         } else {
           setGripper(0);
         }
@@ -134,14 +152,42 @@ public class JoeBident extends SubsystemBase {
         }
       }, 
       () -> {
+        setLEDColor(0, 0, 0);
         if (getGripperOccupied() || getGripperProx()){
-          setIntake(.1);
-          setGripper(.1);
+          setIntake(.2);
+          setGripper(.2);
         } else {
           setIntake(0);
           setGripper(0);
         }
       });
+  }
+
+  public Command grabCubeCommand(Double speed){
+    return this.runEnd(() -> {
+      setLEDColor(0, 255, 0);
+      if (getGripperProx()){
+        setGripper(-.2);
+      } else {
+        setGripper(-.2);
+      }
+
+      if(getGripperOccupied()){
+        setIntake(speed *.25);
+      } else {
+        setIntake(speed);
+      }
+    }, 
+    () -> {
+      setLEDColor(0, 0, 0);
+      if (getGripperOccupied() || getGripperProx()){
+        setIntake(.25);
+        setGripper(.2);
+      } else {
+        setIntake(0);
+        setGripper(0);
+      }
+    });
   }
   public Command ejectWhileOpeningCommand(DoubleSupplier speed){
     return this.runEnd(() -> {
@@ -177,10 +223,10 @@ public class JoeBident extends SubsystemBase {
   }
 
   public void setNeutral(){
-    if (DriverStation.getAlliance() == Alliance.Blue){
-    setLEDColor(0, 0, 1);
+    if (DriverStation.getAlliance() == Alliance.Red){
+    setLEDColor(1, 0, 0);
     } else {
-      setLEDColor(1, 0, 0);
+      setLEDColor(0, 0, 1);
     }
   }
 
@@ -191,6 +237,11 @@ public class JoeBident extends SubsystemBase {
   public Command coneCommand(){
     return this.run(() -> setCone());
   }
+
+  public Command actuallyNeutral(){
+    return this.run(() -> setNeutral());
+  }
+
 
   @Override
   public void periodic() {

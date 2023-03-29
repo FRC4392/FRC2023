@@ -84,7 +84,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command getIntakeCommand(){
-    return this.runEnd(() -> setIntake(.3), () -> setIntake(0));
+    return this.runEnd(() -> setIntake(.4), () -> setIntake(0));
   }
 
   public Command getOuttakeCommand(){
@@ -96,7 +96,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command getIntakePivotCommand(double angle){
-    return this.startEnd(() -> setAngle(angle), () -> doNothing()).until(() -> pivotInPosition());
+    return this.startEnd(() -> setAngle(angle-2), () -> doNothing()).until(() -> pivotInPosition());
   }
 
   public boolean pivotInPosition() {
