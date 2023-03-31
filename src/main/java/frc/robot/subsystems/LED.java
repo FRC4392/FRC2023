@@ -29,11 +29,9 @@ public class LED extends SubsystemBase {
 
   @Override
   public void periodic() {
- if (isEnabled == false) {
-  setLedFade();
-  } else {
- setLedColor();
-}
+    if (isEnabled == false) {
+      setLedFade();
+    } 
   }
 
   // private void rainbow() {

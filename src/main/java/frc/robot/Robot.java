@@ -246,7 +246,8 @@ public class Robot extends TimedRobot {
     Trigger gripperReady = new Trigger(gripperSupplier);
 
     brake.whileTrue(drivetrain.brakeCommand());
-    gripperReady.whileTrue(led.accyGreem());
+    gripperReady.whileTrue(led.accyGreem()); 
+    gripperReady.whileFalse((led.actuallyColor()));
     //led.setDefaultCommand(led.actuallyColor());
    // Trigger isDisabled = new Trigger(() -> isDisabled());
    // isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));

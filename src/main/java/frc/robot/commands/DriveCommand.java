@@ -186,7 +186,6 @@ public class DriveCommand extends CommandBase {
           rotVel = 0.0;
         }
 
-        
         SmartDashboard.putNumber("TargetNode",nodeIndex);
         SmartDashboard.putNumber("CameraY",camPos.getY());
         SmartDashboard.putNumber("DesiredPosition", 0.513+nodeIndex*.5588);
@@ -194,7 +193,6 @@ public class DriveCommand extends CommandBase {
         SmartDashboard.putNumber("DrivetrainAngle", Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
         SmartDashboard.putNumber("RotDiff",(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians()+Math.PI) - camPos.getRotation().getRadians());
         SmartDashboard.putNumber("Yoffset", Math.abs(camPos.getY() - (0.513+nodeIndex*0.5588)));
-        
 
         //If we're outside of 6cm of the target, do the calculation and move
         if(Math.abs(camPos.getY() - (0.513 + nodeIndex * 0.5588)) > 0.06){ 
