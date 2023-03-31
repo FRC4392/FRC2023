@@ -222,10 +222,13 @@ public class Robot extends TimedRobot {
 
   private void configureBindings() {
     Trigger CubeTrigger = operatorController.povLeft();
+    Trigger CubeTrigger2 = operatorController.povDown();
     Trigger highGoalConeTrigger = operatorController.y().and(CubeTrigger.negate());
     Trigger highGoalCubeTrigger = operatorController.y().and(CubeTrigger);
+    Trigger highGoalCubeTrigger2 = operatorController.y().and(CubeTrigger2);
     Trigger MidGoalConeTrigger = operatorController.x().and(CubeTrigger.negate());
     Trigger MidGoalCubeTrigger = operatorController.x().and(CubeTrigger);
+    Trigger MidGoalCubeTrigger2 = operatorController.x().and(CubeTrigger2);
     Trigger shelfTrigger = operatorController.b().and(CubeTrigger.negate());
     Trigger lowGoalConeTrigger = operatorController.a().and(CubeTrigger.negate());
     Trigger lowGoalCubeTrigger = operatorController.a().and(CubeTrigger);
@@ -255,6 +258,8 @@ public class Robot extends TimedRobot {
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
     lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
     lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
+    MidGoalCubeTrigger2.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
+    highGoalCubeTrigger2.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
 
     shelfTrigger.onTrue(arm.elbowPositionCommand(-100).andThen(arm.shoulderPositionCommand(12.0)));
 

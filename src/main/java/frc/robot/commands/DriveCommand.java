@@ -54,7 +54,7 @@ public class DriveCommand extends CommandBase {
     mController = XboxController;
     mLimelight = limelight;
     rotationController.enableContinuousInput(-Math.PI, Math.PI);
-
+    limController.enableContinuousInput(-Math.PI, Math.PI);
     addRequirements(mDrivetrain);
   }
 
@@ -138,6 +138,7 @@ public class DriveCommand extends CommandBase {
     // }
 
     boolean fieldRelative = !mController.getAButton();
+
     //When y button is not pressed, do normal drivetrain things
     if (!mController.getYButton() || !mLimelight.getTV()){
 
@@ -175,24 +176,29 @@ public class DriveCommand extends CommandBase {
         } else if(mController.getLeftBumperPressed() && (nodeIndex > 0)){
           nodeIndex--;
         }
+
+        Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
+
+        //if the magnitude of the difference in angles is greater than 3 degrees, align with the apriltag
+        if ((Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(2.0)) && (camPos.getRotation().getRadians() != 0.0)) {
+          rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians()+Math.PI, -camPos.getRotation().getRadians());
+        } else{
+          rotVel = 0.0;
+        }
+
         
         SmartDashboard.putNumber("TargetNode",nodeIndex);
-        Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
-        SmartDashboard.putNumber("XDiff",camPos.getY());
+        SmartDashboard.putNumber("CameraY",camPos.getY());
         SmartDashboard.putNumber("DesiredPosition", 0.513+nodeIndex*.5588);
-        //if the magnitude of the difference in angles is greater than 3 degrees, align with the apriltag
-        if ((Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(3.0)) && (camPos.getRotation().getRadians() != 0.0)) {
-
-         // rotVel = limController.calculate(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians(), -camPos.getRotation().getRadians());
-        } else{
-            rotVel = 0.0;
-        }
-        SmartDashboard.putNumber("RotDiff",Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians()- camPos.getRotation().getRadians());
         SmartDashboard.putNumber("CameraRotation:", camPos.getRotation().getRadians());
         SmartDashboard.putNumber("DrivetrainAngle", Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians());
-        SmartDashboard.putNumber(("Yoffset"), Math.abs(camPos.getY() - (0.513+nodeIndex*0.5588)));
-        if(Math.abs(camPos.getY() - 0.513+nodeIndex*0.5588) > 0.2){
-          xVel = strafeController.calculate(camPos.getY(), 0.513+nodeIndex*0.5588);
+        SmartDashboard.putNumber("RotDiff",(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians()+Math.PI) - camPos.getRotation().getRadians());
+        SmartDashboard.putNumber("Yoffset", Math.abs(camPos.getY() - (0.513+nodeIndex*0.5588)));
+        
+
+        //If we're outside of 6cm of the target, do the calculation and move
+        if(Math.abs(camPos.getY() - (0.513 + nodeIndex * 0.5588)) > 0.06){ 
+          xVel = -strafeController.calculate(camPos.getY(), 0.513+nodeIndex*0.5588);
         } else{
           xVel = 0.0;
         }
@@ -202,7 +208,6 @@ public class DriveCommand extends CommandBase {
     }
 
     // mDrivetrain.drive(yVel,xVel, rotVel, fieldRelative);
-
     // mDrivetrain.setModulesAngle(xVel);
   }
 
