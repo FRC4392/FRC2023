@@ -93,7 +93,7 @@ public class LED extends SubsystemBase {
   }
 
   public void setLedFade() {
-    if(time<10000) {
+    if(time>-1) {
       time ++;
     if (DriverStation.getAlliance() == Alliance.Blue) {
       for (i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -128,7 +128,7 @@ public class LED extends SubsystemBase {
     }
   } else {
       time ++;
-
+      direction = 1;
       if(direction == 1){
         i++;
         m_ledBuffer.setHSV(i,0,255,255);
