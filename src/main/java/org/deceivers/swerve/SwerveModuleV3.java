@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleV3 implements SwerveModule {
 
@@ -141,6 +142,8 @@ public class SwerveModuleV3 implements SwerveModule {
     // Log swerve data
     @Override
     public void log() {
+        SmartDashboard.putNumber(mName + " Current", mDriveMotor.getOutputCurrent());
+        SmartDashboard.putNumber(mName + " Speed", mDriveEncoder.getVelocity());
     }
 
     // Set the speed and direction of the swerve module

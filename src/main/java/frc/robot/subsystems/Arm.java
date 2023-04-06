@@ -37,8 +37,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder shoulCanCoder = new CANCoder(21);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 160);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, 360*1.5);
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 250);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, (360*1.5)+30);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);

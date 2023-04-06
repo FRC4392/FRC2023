@@ -26,7 +26,6 @@ public class Intake extends SubsystemBase {
   private final TrapezoidProfile.Constraints pivotProfileConstraints = new Constraints(360, 360*3);
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax pivot = new CANSparkMax(44, MotorType.kBrushless);
-  private final CANSparkMax roller = new CANSparkMax(43, MotorType.kBrushless);
   private final CANSparkMax left = new CANSparkMax(41, MotorType.kBrushless);
   private final CANSparkMax right = new CANSparkMax(42, MotorType.kBrushless);
 
@@ -39,11 +38,9 @@ public class Intake extends SubsystemBase {
   public Intake() {
 
     pivot.restoreFactoryDefaults();
-    roller.restoreFactoryDefaults();
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
-    roller.setInverted(true);
     right.setInverted(true);
 
     pivotEncoder = pivot.getEncoder();
@@ -73,7 +70,6 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntake(double speed){
-    roller.set(speed);
     left.set(speed);
     right.set(speed);
 

@@ -10,10 +10,13 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import org.deceivers.drivers.LimelightHelpers;
 import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
 
@@ -68,8 +71,8 @@ public class Drivetrain extends SubsystemBase {
       mSwerveDrive.stop();
     }
   
-    public void followPath(double initTime, PathPlannerTrajectory pptrajectory){
-      mSwerveDrive.followPath(initTime, pptrajectory);
+    public void followPath(double initTime, PathPlannerTrajectory pptrajectory, boolean useLimelight){
+      mSwerveDrive.followPath(initTime, pptrajectory, useLimelight);
     }
   
     @Override

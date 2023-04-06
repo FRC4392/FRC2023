@@ -95,6 +95,8 @@ public class JoeBident extends SubsystemBase {
 int flashy = 0;
 int no = 0;
   public Command autoGrabCommand(DoubleSupplier speed){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
 
     return this.runEnd(
       () -> {
@@ -112,7 +114,7 @@ int no = 0;
           no = 1;
         }
         if (getGripperProx()){
-          setGripper(.6);
+          setGripper(.8);
         } else {
           setGripper(0);
         }
@@ -127,7 +129,7 @@ int no = 0;
         setLEDColor(0, 0, 0);
         if (getGripperOccupied()){
           setIntake(.3);
-          setGripper(.3);
+          setGripper(.2);
         } else {
           setIntake(0);
           setGripper(0);
@@ -136,11 +138,13 @@ int no = 0;
   }
 
   public Command autoIntakeCommand(Double speed){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(
       () -> {
         setLEDColor(0, 255, 0);
         if (getGripperProx()){
-          setGripper(.6);
+          setGripper(.8);
         } else {
           setGripper(0);
         }
@@ -164,6 +168,8 @@ int no = 0;
   }
 
   public Command grabCubeCommand(Double speed){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(() -> {
       setLEDColor(0, 255, 0);
       if (getGripperProx()){
@@ -190,6 +196,8 @@ int no = 0;
     });
   }
   public Command ejectWhileOpeningCommand(DoubleSupplier speed){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(() -> {
       setGripper(-.1);
       setIntake(speed.getAsDouble());
@@ -197,18 +205,24 @@ int no = 0;
   }
 
   public Command ejectWithoutOpeningCommand(DoubleSupplier speed){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(() -> {
       setIntake(speed.getAsDouble());
     }, () -> stop());
   }
 
   public Command openCommand(){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(() -> {
       setGripper(-.5);
     }, () -> stop());
   }
 
   public Command closeCommand(){
+    HunterBident.setInverted(true);
+    JillBident.follow(HunterBident, true);
     return this.runEnd(() -> {
       setGripper(.5);
     }, () -> stop());

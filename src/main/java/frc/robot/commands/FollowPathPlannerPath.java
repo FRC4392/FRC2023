@@ -21,14 +21,16 @@ public class FollowPathPlannerPath extends CommandBase {
   PathPlannerTrajectory trajectory;
   Timer timer = new Timer();
   double initTime;
+  boolean limelight;
 
   List<EventMarker> markers;
   /** Creates a new FollowPathPlannerPath. */
-  public FollowPathPlannerPath(PathPlannerTrajectory trajectory, boolean initPosition, Drivetrain drivetrain) {
+  public FollowPathPlannerPath(PathPlannerTrajectory trajectory, boolean initPosition, Drivetrain drivetrain, boolean useLimelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drivetrain = drivetrain;
     this.initPosition = initPosition;
     this.trajectory = trajectory;
+    this.limelight = useLimelight;
 
     addRequirements(drivetrain);
   }
@@ -56,7 +58,7 @@ public class FollowPathPlannerPath extends CommandBase {
     for (EventMarker marker : markers) {
       
     }
-    drivetrain.followPath(initTime, trajectory);
+    drivetrain.followPath(initTime, trajectory, limelight);
   }
 
   // Called once the command ends or is interrupted.

@@ -1,5 +1,6 @@
 package org.deceivers.swerve;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,10 +14,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -68,7 +71,7 @@ public class SwerveDrive {
             states[i] = mModules[i].getPosition();
         }
 
-        mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, new Pose2d());
+        mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mKinematics, Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states, new Pose2d(), VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(360)));
 
         Arrays.stream(mModules).forEach(SwerveModule::init);
     }
@@ -146,7 +149,7 @@ public class SwerveDrive {
         return mSwerveDrivePoseEstimator.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
 
-    public void followPath(double startTime, PathPlannerTrajectory pptrajectory){
+    public void followPath(double startTime, PathPlannerTrajectory pptrajectory, boolean useLimelight){
         PathPlannerState goal = (PathPlannerState) pptrajectory.sample(Timer.getFPGATimestamp() - startTime);
         
 
@@ -156,6 +159,9 @@ public class SwerveDrive {
 
         double[] pathGoalArray = {goal.poseMeters.getX(), goal.poseMeters.getY(), goal.holonomicRotation.getDegrees()};
         pathGoalPose.set(pathGoalArray);
+        SmartDashboard.putNumber("GoalX", goal.poseMeters.getX());
+        SmartDashboard.putNumber("GoalY", goal.poseMeters.getY());
+        SmartDashboard.putNumber("GoalRotation", goal.poseMeters.getRotation().getDegrees());
         double[] pathErrorArray = {goal.poseMeters.getX()-getPose().getX(), goal.poseMeters.getY()-getPose().getY(), goal.holonomicRotation.getDegrees() - getPose().getRotation().getDegrees()};
         pathGoalPoseError.set(pathErrorArray);
     }
@@ -164,5 +170,17 @@ public class SwerveDrive {
         Arrays.stream(mModules).forEach(SwerveModule::log);
         double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};
         swervePose.set(swervePoseArray);
+
+        // if (LimelightHelpers.getTV("")){
+        // Pose2d botPose = LimelightHelpers.getBotPose2d_wpiBlue("");
+        // double timeDelay = Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture("")/1000.0) - (LimelightHelpers.getLatency_Pipeline("")/1000.0);
+
+        // SmartDashboard.putNumber("limelightTIme", timeDelay);
+        // SmartDashboard.putNumber("limex", botPose.getY());
+        // SmartDashboard.putNumber("limey", botPose.getX());
+        // SmartDashboard.putNumber("limeRot", botPose.getRotation().getDegrees());
+        // SmartDashboard.putNumber("odometryRotation", mSwerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+        // SmartDashboard.putNumber("Tags", LimelightHelpers.getLatestResults("").targetingResults.targets_Retro.length);
+        //}
     }
 }

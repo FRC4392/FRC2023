@@ -87,7 +87,7 @@
       },
       "holonomicAngle": 0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 1.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -128,9 +128,9 @@
       ]
     },
     {
-      "position": 1.0,
+      "position": 1.0351207386363641,
       "names": [
-        "Scoring Position"
+        "ScorePosition"
       ]
     },
     {
