@@ -36,7 +36,8 @@ public class Arm extends SubsystemBase {
   private final RelativeEncoder shoulder1Encoder;
   private final RelativeEncoder elbowEncoder;
   private final AbsoluteEncoder elbowAbsoluteEncoder;
-  private final CANCoder shoulCanCoder = new CANCoder(21);
+  private final AbsoluteEncoder armAbsoluteEncoder;
+  //private final CANCoder shoulCanCoder = new CANCoder(21);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
   private  TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
@@ -66,9 +67,10 @@ public class Arm extends SubsystemBase {
     Elbow.restoreFactoryDefaults();
 
     shoulder1Encoder = Shoulder1.getEncoder();
+    armAbsoluteEncoder = Shoulder1.getAbsoluteEncoder(Type.kDutyCycle);
+
     elbowEncoder = Elbow.getEncoder();
     elbowAbsoluteEncoder = Elbow.getAbsoluteEncoder(Type.kDutyCycle);
-
     shoulderPID = Shoulder1.getPIDController();
     elbowPID = Elbow.getPIDController();
 
@@ -78,10 +80,15 @@ public class Arm extends SubsystemBase {
 
     shoulder1Encoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
+    
     shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
     elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
-    elbowAbsoluteEncoder.setPositionConversionFactor(360* .8788);
+
+    elbowAbsoluteEncoder.setPositionConversionFactor(360.0* .8788);
     elbowAbsoluteEncoder.setAverageDepth(1);
+
+    armAbsoluteEncoder.setPositionConversionFactor(360.0 * .8788);
+    armAbsoluteEncoder.setAverageDepth(1);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
@@ -172,7 +179,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double getShoulderAbsoluteEncoder(){
-    return shoulCanCoder.getAbsolutePosition() * .8788;
+    return armAbsoluteEncoder.getPosition() * .8788;
   }
 
   public double getElbowAbsolutePostition(){
