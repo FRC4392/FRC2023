@@ -39,8 +39,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder shoulCanCoder = new CANCoder(21);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, (360*1.5));
+  private  TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
+  private  TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, (360*1.5));
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
@@ -55,6 +55,8 @@ public class Arm extends SubsystemBase {
   private TrapezoidProfile.State shoulderGoal = new TrapezoidProfile.State(0, 0);
 
   private boolean manualOverride = false;
+
+  public boolean isSlow = false;
 
   /** Creates a new Arm. */
   public Arm() {
@@ -229,6 +231,29 @@ public class Arm extends SubsystemBase {
       setShoulder(shoulder.getAsDouble());
       setElbow(elbow.getAsDouble());
     })).finallyDo(terminated -> setManualOverride(false));
+  }
+  public Command enableSlowMode(){
+    return this.runOnce(() -> {
+      isSlow = true;
+      shoulderProfileConstraints = new TrapezoidProfile.Constraints(180, 50);
+      elbowProfileContraints = new TrapezoidProfile.Constraints(180, 50);
+    });
+  }
+
+  public Command disableSlowMode(){
+    return this.runOnce(    () -> {
+      isSlow = false;
+      shoulderProfileConstraints = new Constraints(360, 200);
+      elbowProfileContraints = new Constraints(360, (360*1.5));
+    });
+  }
+
+  public Command ToggleSlowMode(){
+    if (isSlow){
+      return enableSlowMode();
+    } else {
+      return disableSlowMode();
+    }
   }
 
   @Override

@@ -283,6 +283,9 @@ public class Robot extends TimedRobot {
     groundIntake.onFalse(arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0))));
     groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
+
+    operatorController.start().onTrue(arm.ToggleSlowMode());
+
     operatorController.leftBumper().whileTrue(bident.closeCommand());
     operatorController.rightBumper().whileTrue(bident.openCommand());
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController, limelight));
