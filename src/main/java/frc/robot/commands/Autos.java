@@ -31,9 +31,8 @@ public final class Autos {
     eventMap.put("Intake", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(20.0).raceWith(bident.grabCubeCommand(1.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));
     eventMap.put("ScorePosition", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17))));
     eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(20.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()))))));
-    
-    eventMap.put("ScoreAgain", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0))));
     eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
+    eventMap.put("ScoreAgain", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0))));
     eventMap.put("ScoreMoveAgain", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
 
     List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation2P", 5, 2.25);
