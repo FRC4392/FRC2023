@@ -28,9 +28,9 @@ public final class Autos {
   public static Command getLoadingStationCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
 
     HashMap<String, Command> eventMap = new HashMap<>();
-    eventMap.put("Intake", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(18.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));
+    eventMap.put("Intake", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(20.0).raceWith(bident.grabCubeCommand(1.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));
     eventMap.put("ScorePosition", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17))));
-    eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(18.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()))))));
+    eventMap.put("IntakeAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(20.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()))))));
     
     eventMap.put("ScoreAgain", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0))));
     eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
@@ -101,7 +101,7 @@ public final class Autos {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
-            PathPlanner.loadPath("Bump", 3, 1), DriverStation.getAlliance()), true, drivetrain, false));
+            PathPlanner.loadPath("Bump", 3, 1), DriverStation.getAlliance()), true, drivetrain, false), drivetrain.brakeCommand());
   }
 
   public static Command getStupidCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {

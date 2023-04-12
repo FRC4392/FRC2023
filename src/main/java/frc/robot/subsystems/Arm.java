@@ -22,6 +22,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -37,8 +39,8 @@ public class Arm extends SubsystemBase {
   private final CANCoder shoulCanCoder = new CANCoder(21);
   private final SparkMaxPIDController shoulderPID;
   private final SparkMaxPIDController elbowPID;
-  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 250);
-  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, (360*1.5)+30);
+  private final TrapezoidProfile.Constraints shoulderProfileConstraints = new Constraints(360, 200);
+  private final TrapezoidProfile.Constraints elbowProfileContraints = new Constraints(360, (360*1.5));
   private final double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
   private final CANSparkMax Shoulder1 = new CANSparkMax(21, MotorType.kBrushless);
   private final CANSparkMax Shoulder2 = new CANSparkMax(22, MotorType.kBrushless);
@@ -76,7 +78,7 @@ public class Arm extends SubsystemBase {
     elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
     elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
-    elbowAbsoluteEncoder.setPositionConversionFactor(360);
+    elbowAbsoluteEncoder.setPositionConversionFactor(360* .8788);
     elbowAbsoluteEncoder.setAverageDepth(1);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
@@ -118,6 +120,7 @@ public class Arm extends SubsystemBase {
     Shoulder2.follow(Shoulder1);
     
     setZero();
+    setZero();
   }
 
   public void setManualOverride(boolean Override){
@@ -137,6 +140,9 @@ public class Arm extends SubsystemBase {
   }
 
   public void setElbowPosition(double position) {
+    if (DriverStation.getAlliance() == Alliance.Red){
+      position += 1.5;
+    }
     elbowGoal = new TrapezoidProfile.State(position, 0);
   }
 
@@ -150,8 +156,8 @@ public class Arm extends SubsystemBase {
 
   public void setZero() {
     
-    shoulder1Encoder.setPosition(shoulCanCoder.getAbsolutePosition());
-    elbowEncoder.setPosition(getElbowAbsolutePostition() - shoulCanCoder.getAbsolutePosition());
+    shoulder1Encoder.setPosition(getShoulderAbsoluteEncoder());
+    elbowEncoder.setPosition(getElbowAbsolutePostition() - getShoulderAbsoluteEncoder());
     updateCurrentState();
   }
 
@@ -163,11 +169,15 @@ public class Arm extends SubsystemBase {
     return shoulder1Encoder.getPosition();
   }
 
+  public double getShoulderAbsoluteEncoder(){
+    return shoulCanCoder.getAbsolutePosition() * .8788;
+  }
+
   public double getElbowAbsolutePostition(){
     double angle = elbowAbsoluteEncoder.getPosition();
 
     if (angle > 180){
-      angle -=360;
+      angle -=360* .8788;
     }
 
     return angle;
@@ -197,10 +207,14 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isZero(){
-    return ((Math.abs(shoulCanCoder.getAbsolutePosition())) < 3 && Math.abs(getElbowAbsolutePostition() - shoulCanCoder.getAbsolutePosition()) < 3);
+    return ((Math.abs(getShoulderAbsoluteEncoder())) < 3 && Math.abs(getElbowAbsolutePostition() - getShoulderAbsoluteEncoder()) < 3);
   }
 
   private void log(){
+    SmartDashboard.putNumber("ShoulderAbsolute", getShoulderAbsoluteEncoder());
+    SmartDashboard.putNumber("ShoulderIncremental", getShoulderPostition());
+    SmartDashboard.putNumber("ElbowAbsolute", getElbowAbsolutePostition());
+    SmartDashboard.putNumber("ElbowIncremental", getElbowPostition());
   }
 
   public void updateCurrentState(){
@@ -258,7 +272,7 @@ public class Arm extends SubsystemBase {
   }
 
   private double getElbowGravityFeedForward() {
-    double Shoulderfeedforward = .5 * Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
+    double Shoulderfeedforward = .5 * Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()));
     return Shoulderfeedforward;
   }
 }

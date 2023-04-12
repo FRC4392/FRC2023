@@ -255,7 +255,7 @@ public class Robot extends TimedRobot {
     operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-133.0).andThen(arm.shoulderPositionCommand(-38.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
-    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-95).andThen(arm.shoulderPositionCommand(-13)));
+    MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-98).andThen(arm.shoulderPositionCommand(-13)));
     MidGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-78).andThen(arm.shoulderPositionCommand(0)));
     lowGoalConeTrigger.onTrue(arm.elbowPositionCommand(-50).andThen(arm.shoulderPositionCommand(0)));
     lowGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-45).andThen(arm.shoulderPositionCommand(0)));
@@ -279,7 +279,7 @@ public class Robot extends TimedRobot {
     operatorController.leftTrigger(0).onFalse(bident.actuallyNeutral());
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(95.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.5).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    
+    groundIntake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    
     groundIntake.onFalse(arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0))));
     groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
