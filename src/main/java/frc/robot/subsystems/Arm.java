@@ -81,6 +81,7 @@ public class Arm extends SubsystemBase {
     shoulder1Encoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     elbowEncoder.setPositionConversionFactor(360.0 / 98.38556505223172);
     
+    //i hate this
     shoulder1Encoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
     elbowEncoder.setVelocityConversionFactor((360.0 / 98.38556505223172) / 60);
 

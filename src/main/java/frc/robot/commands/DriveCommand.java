@@ -144,27 +144,30 @@ public class DriveCommand extends CommandBase {
     
     } else if (mLimelight.getTV()){ //Otherwise, do limelight stuff
         //Initialize the selected node to the one in front of the robot when the button is pressed
+        Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
+
         if(mController.getYButtonPressed()){
-          switch((int)mLimelight.getFid()){
-            case 1:
-                nodeIndex = 1;
-                break;
-            case 2:
-                nodeIndex = 4;
-                break;
-            case 3:
-                nodeIndex = 7;
-                break;
-            case 8:
-                nodeIndex = 1;
-                break;
-            case 7:
-                nodeIndex = 4;
-                break;
-            case 6:
-                nodeIndex = 7;
-                break;
-          }
+          nodeIndex = (int) ((camPos.getY()-0.513+nodeIndex)/0.5588);
+          // switch((int)mLimelight.getFid()){
+          //   case 1:
+          //       nodeIndex = 1;
+          //       break;
+          //   case 2:
+          //       nodeIndex = 4;
+          //       break;
+          //   case 3:
+          //       nodeIndex = 7;
+          //       break;
+          //   case 8:
+          //       nodeIndex = 1;
+          //       break;
+          //   case 7:
+          //       nodeIndex = 4;
+          //       break;
+          //   case 6:
+          //       nodeIndex = 7;
+          //       break;
+          // }
         }
 
         //when controller bumpers pressed, index through the node positions
@@ -174,8 +177,6 @@ public class DriveCommand extends CommandBase {
         } else if(mController.getLeftBumperPressed() && (nodeIndex > 0)){
           nodeIndex--;
         }
-
-        Pose2d camPos = mLimelight.getPose(); //get pose: [x,y,theta]
 
         //if the magnitude of the difference in angles is greater than 3 degrees, align with the apriltag
         if ((Math.abs(Rotation2d.fromDegrees(mDrivetrain.getRotation()).getRadians() - camPos.getRotation().getRadians()) >= Math.toRadians(2.0)) && (camPos.getRotation().getRadians() != 0.0)) {
