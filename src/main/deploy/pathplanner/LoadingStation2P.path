@@ -163,13 +163,13 @@
     {
       "position": 0.0,
       "names": [
-        "IntakePostion"
+        "IntakePosition"
       ]
     },
     {
       "position": 2.0363636363635713,
       "names": [
-        "IntakeAgain"
+        "IntakePositionAgain"
       ]
     }
   ]
