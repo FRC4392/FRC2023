@@ -74,6 +74,9 @@ public class Arm extends SubsystemBase {
     shoulderPID = Shoulder1.getPIDController();
     elbowPID = Elbow.getPIDController();
 
+    //If weirdness delete this line.
+    shoulderPID.setFeedbackDevice(armAbsoluteEncoder);
+
     Elbow.setInverted(true);
     Shoulder1.setInverted(true);
     Shoulder2.setInverted(true);
@@ -130,7 +133,6 @@ public class Arm extends SubsystemBase {
     Shoulder2.follow(Shoulder1);
     
     setZero();
-    setZero();
   }
 
   public void setManualOverride(boolean Override){
@@ -180,7 +182,13 @@ public class Arm extends SubsystemBase {
   }
 
   public double getShoulderAbsoluteEncoder(){
-    return armAbsoluteEncoder.getPosition() * .8788;
+    double angle = armAbsoluteEncoder.getPosition();
+
+    if (angle > 180){
+      angle -=360* .8788;
+    }
+
+    return angle;
   }
 
   public double getElbowAbsolutePostition(){
