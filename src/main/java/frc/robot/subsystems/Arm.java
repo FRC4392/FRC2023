@@ -75,7 +75,7 @@ public class Arm extends SubsystemBase {
     elbowPID = Elbow.getPIDController();
 
     //If weirdness delete this line.
-    shoulderPID.setFeedbackDevice(armAbsoluteEncoder);
+    shoulderPID.setFeedbackDevice(shoulder1Encoder);
 
     Elbow.setInverted(true);
     Shoulder1.setInverted(true);
@@ -93,6 +93,7 @@ public class Arm extends SubsystemBase {
 
     armAbsoluteEncoder.setPositionConversionFactor(360.0 * .8788);
     armAbsoluteEncoder.setAverageDepth(1);
+    armAbsoluteEncoder.setInverted(true);
 
     Shoulder1.setSoftLimit(SoftLimitDirection.kForward, 45);
     Shoulder1.setSoftLimit(SoftLimitDirection.kReverse, -45);
