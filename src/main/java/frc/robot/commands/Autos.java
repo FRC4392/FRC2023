@@ -31,7 +31,7 @@ public final class Autos {
     eventMap.put("IntakePosition", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(20.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75))));
     eventMap.put("Intake", bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()));
     eventMap.put("ScorePosition", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17))));
-    eventMap.put("IntakePostionAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(20.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75)))));
+    eventMap.put("IntakePositionAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(20.0).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75)))));
     eventMap.put("IntakeAgain", bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()));
     eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
     eventMap.put("ScoreAgain", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0))));
