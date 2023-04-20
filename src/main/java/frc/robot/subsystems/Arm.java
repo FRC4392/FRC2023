@@ -234,6 +234,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("ShoulderIncremental", getShoulderPostition());
     SmartDashboard.putNumber("ElbowAbsolute", getElbowAbsolutePostition());
     SmartDashboard.putNumber("ElbowIncremental", getElbowPostition());
+    SmartDashboard.putBoolean("SlowMode", isSlow);
   }
 
   public void updateCurrentState(){
@@ -249,6 +250,14 @@ public class Arm extends SubsystemBase {
       setElbow(elbow.getAsDouble());
     })).finallyDo(terminated -> setManualOverride(false));
   }
+  public Command disableSlowMode(){
+    return this.runOnce(() -> {
+      isSlow = false;
+      shoulderProfileConstraints = new TrapezoidProfile.Constraints(360, 200);
+      elbowProfileContraints = new TrapezoidProfile.Constraints(360, (360*1.5));
+    });
+  }
+
   public Command enableSlowMode(){
     return this.runOnce(() -> {
       isSlow = true;
@@ -257,20 +266,18 @@ public class Arm extends SubsystemBase {
     });
   }
 
-  public Command disableSlowMode(){
-    return this.runOnce(    () -> {
-      isSlow = false;
-      shoulderProfileConstraints = new Constraints(360, 200);
-      elbowProfileContraints = new Constraints(360, (360*1.5));
-    });
-  }
-
   public Command ToggleSlowMode(){
-    if (isSlow){
-      return enableSlowMode();
-    } else {
-      return disableSlowMode();
-    }
+    return this.runOnce(() -> {
+      if (isSlow){
+      isSlow = false;
+      shoulderProfileConstraints = new TrapezoidProfile.Constraints(360, 200);
+      elbowProfileContraints = new TrapezoidProfile.Constraints(360, (360*1.5));
+      } else {
+      isSlow = true;
+      shoulderProfileConstraints = new TrapezoidProfile.Constraints(180, 50);
+      elbowProfileContraints = new TrapezoidProfile.Constraints(180, 50);
+      }
+    });
   }
 
   @Override
