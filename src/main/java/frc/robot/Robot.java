@@ -62,8 +62,9 @@ public class Robot extends TimedRobot {
     chooser.addOption("LoadingStation 2+", "LoadingStaion2P");
     chooser.addOption("Bump 2+", "Bump2P");
     chooser.addOption("Bump", "Bump");
+    
     chooser.addOption("LoadingStation Balance", "LoadingStation2B");
-
+    chooser.addOption("TestBalance", "TestBalance");
     chooser.addOption("Balance", "Balance");
 
     SmartDashboard.putData(chooser);
@@ -124,6 +125,9 @@ public class Robot extends TimedRobot {
         case "LoadingStation2B":
           m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
           break;
+        case "TestBalance":
+          m_autonomousCommand = Autos.balanceTest(arm, bident, drivetrain, intake);
+          break;
         default:
           m_autonomousCommand = null;
       }
@@ -156,6 +160,9 @@ public class Robot extends TimedRobot {
           break;
         case "LoadingStation2B":
           m_autonomousCommand = Autos.getLoadingStationBalanceCommand(arm, bident, drivetrain, intake);
+          break;
+        case "TestBalance":
+          m_autonomousCommand = Autos.balanceTest(arm, bident, drivetrain, intake);
           break;
         default:
           m_autonomousCommand = null;

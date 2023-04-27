@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -118,6 +119,23 @@ public class Drivetrain extends SubsystemBase {
           setModulesAngle(angle, i);
           angle += 90;
         }
+      });
+    }
+
+    public Command balanceCommand(){
+      return this.run(() ->{
+        double pitch = pidgey.getRoll();
+        double maxOutput = .25;
+        double output = pitch * .01;
+
+        if (Math.abs(output) > maxOutput){
+          output = Math.signum(output) * maxOutput;
+        }
+
+        drive(output, 0, 0, false);
+
+        SmartDashboard.putNumber("pitch", pitch);
+        SmartDashboard.putNumber("output", output);
       });
     }
 }

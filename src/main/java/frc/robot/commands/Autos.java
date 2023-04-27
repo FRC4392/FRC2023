@@ -31,20 +31,20 @@ public final class Autos {
     eventMap.put("IntakePosition", intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(20.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75))));
     eventMap.put("Intake", bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()));
     eventMap.put("ScorePosition", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-102).until((() -> arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0)).andThen(arm.shoulderPositionCommand(-17))));
-    eventMap.put("IntakePositionAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(20.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75)))));
-    eventMap.put("IntakeAgain", bident.grabCubeCommand(0.75).alongWith(intake.getIntakeCommand()));
+    eventMap.put("IntakePositionAgain", arm.shoulderPositionCommand(0).alongWith(intake.getIntakePivotCommand(98)).andThen(arm.elbowPositionCommand(20.0)).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75))));
+    eventMap.put("IntakeAgain", bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()));
     eventMap.put("ScoreMove", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
     eventMap.put("ScoreAgain", arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(-78).until((()->arm.getElbowPostition() < 8))).andThen(intake.getIntakePivotCommand(0.0))));
     eventMap.put("ScoreMoveAgain", bident.ejectWhileOpeningCommand(() -> -.4).withTimeout(.2));
 
-    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation2P", 5, 2.25);
+    List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup("LoadingStation2P", 5, 2.6);
 
 
     FollowPathWithEvents firstPath = new FollowPathWithEvents(new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
       paths.get(0), DriverStation.getAlliance()), true, drivetrain, false), paths.get(0).getMarkers(), eventMap);
 
-    return Commands.sequence(arm.resetEncoder(), bident.autoGrabCommand(()->0.1).withTimeout(0.05).raceWith(intake.getIntakePivotCommand(95)), arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
-        bident.openCommand().withTimeout(0.1), bident.openCommand().raceWith(arm.shoulderPositionCommand(0.0)),
+    return Commands.sequence(arm.resetEncoder(), bident.autoGrabCommand(()->0.01).withTimeout(0.005).raceWith(intake.getIntakePivotCommand(95)), arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
+        bident.openCommand().withTimeout(0.25), bident.openCommand().raceWith(arm.shoulderPositionCommand(0.0)),
         firstPath);
   }
 
@@ -95,7 +95,7 @@ public final class Autos {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)),
         new FollowPathPlannerPath(PathPlannerTrajectory.transformTrajectoryForAlliance(
-            PathPlanner.loadPath("Balance", 3, 1), DriverStation.getAlliance()), true, drivetrain, false));
+            PathPlanner.loadPath("Balance", 2, 1), DriverStation.getAlliance()), true, drivetrain, false), drivetrain.balanceCommand());
   }
 
   public static Command getBumpCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
@@ -108,5 +108,9 @@ public final class Autos {
   public static Command getStupidCommand(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake) {
     return Commands.sequence(arm.elbowPositionCommand(-130.0).andThen(arm.shoulderPositionCommand(-37.0)),
         bident.openCommand().withTimeout(.5), arm.shoulderPositionCommand(0.0).andThen(arm.elbowPositionCommand(0.0)));
+  }
+
+  public static Command balanceTest(Arm arm, JoeBident bident, Drivetrain drivetrain, Intake intake){
+    return drivetrain.balanceCommand();
   }
 }

@@ -41,9 +41,9 @@ public class JoeBident extends SubsystemBase {
     HunterBident.setInverted(true);
     JillBident.follow(HunterBident, true);
 
-    HunterBident.setSmartCurrentLimit(25);
+    HunterBident.setSmartCurrentLimit(30);
     HunterBident.setIdleMode(IdleMode.kBrake);
-    JillBident.setSmartCurrentLimit(25);
+    JillBident.setSmartCurrentLimit(30);
     JillBident.setIdleMode(IdleMode.kBrake);
     
     CamellaHarris.setSmartCurrentLimit(10);

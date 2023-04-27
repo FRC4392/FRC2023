@@ -153,9 +153,6 @@ public class Arm extends SubsystemBase {
   }
 
   public void setElbowPosition(double position) {
-    if (DriverStation.getAlliance() == Alliance.Red){
-      position += 1.5;
-    }
     elbowGoal = new TrapezoidProfile.State(position, 0);
   }
 
@@ -246,8 +243,8 @@ public class Arm extends SubsystemBase {
 
   public Command getManualArmCommand(DoubleSupplier shoulder, DoubleSupplier elbow){
     return this.runOnce(()->setManualOverride(true)).andThen(run(()->{
-      setShoulder(shoulder.getAsDouble());
-      setElbow(elbow.getAsDouble());
+      setShoulder(Math.pow(shoulder.getAsDouble(), 2) * Math.signum(shoulder.getAsDouble()));
+      setElbow(Math.pow(elbow.getAsDouble(), 2) * Math.signum(elbow.getAsDouble()));
     })).finallyDo(terminated -> setManualOverride(false));
   }
   public Command disableSlowMode(){
@@ -302,6 +299,8 @@ public class Arm extends SubsystemBase {
     double Shoulderfeedforward = getShoulderGravityFeedForward() + getShoulderVelocityFeedForward(shoulderSetpoint.velocity);
 
     shoulderPID.setReference(shoulderSetpoint.position, ControlType.kPosition, 0, Shoulderfeedforward);
+    } else {
+      updateCurrentState();
     }
 
     log();
@@ -312,7 +311,8 @@ public class Arm extends SubsystemBase {
   }
 
   private double getShoulderGravityFeedForward() {
-    double Shoulderfeedforward = -.6 * Math.sin(Units.degreesToRadians(shoulder1Encoder.getPosition()));
+    double Shoulderfeedforward = -1.25 * Math.sin(Units.degreesToRadians(getShoulderAbsoluteEncoder()));
+    //SmartDashboard.putNumber("shouldeGravityFeedForward", Shoulderfeedforward);
     return Shoulderfeedforward;
   }
 
@@ -322,6 +322,7 @@ public class Arm extends SubsystemBase {
 
   private double getElbowGravityFeedForward() {
     double Shoulderfeedforward = .5 * Math.sin(Units.degreesToRadians(elbowEncoder.getPosition()));
+    //SmartDashboard.putNumber("elbowGravityFeedForward", Shoulderfeedforward);
     return Shoulderfeedforward;
   }
 }
