@@ -7,10 +7,19 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,12 +36,15 @@ import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Limelight;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each , as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each , as described in the TimedRobot documentation. If you change the name
+ * of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   XboxController driverController = new XboxController(0);
@@ -49,20 +61,39 @@ public class Robot extends TimedRobot {
   String selectedAuto;
   Alliance previouAlliance;
 
-  
-
-  
   /**
-   * This function is run when the robot is first started up and should be used for any
+   * This function is run when the robot is first started up and should be used
+   * for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+
+    Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+
+    if (isReal()) {
+      Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+      Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+      new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    } else {
+      setUseTiming(false); // Run as fast as possible
+      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+      Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save
+                                                                                                          // outputs to
+                                                                                                          // a new log
+    }
+
+    // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic
+    // Timestamps" in the "Understanding Data Flow" page
+    Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may
+                                  // be added.
+
     chooser.setDefaultOption("Stupid", "Stupid");
     chooser.addOption("LoadingStation 2+", "LoadingStaion2P");
     chooser.addOption("Bump 2+", "Bump2P");
     chooser.addOption("Bump", "Bump");
-    
+
     chooser.addOption("LoadingStation Balance", "LoadingStation2B");
     chooser.addOption("TestBalance", "TestBalance");
     chooser.addOption("Balance", "Balance");
@@ -73,17 +104,23 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * This function is called every 20 ms, no matter the mode. Use this for items
+   * like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
    * SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
 
     SmartDashboard.putString("Selected Auto", selectedAuto);
@@ -99,26 +136,26 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-     if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()){
-    bident.setLEDColor(0, 0, 1);
+    if (DriverStation.getAlliance() == Alliance.Blue || previouAlliance != DriverStation.getAlliance()) {
+      bident.setLEDColor(0, 0, 1);
     } else {
       bident.setLEDColor(1, 0, 0);
     }
 
-    if (selectedAuto != chooser.getSelected()){
-      switch(chooser.getSelected()){
+    if (selectedAuto != chooser.getSelected()) {
+      switch (chooser.getSelected()) {
         case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Balance":
           m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Bump":
           m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
           break;
@@ -135,26 +172,28 @@ public class Robot extends TimedRobot {
       previouAlliance = DriverStation.getAlliance();
     }
 
-
   }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
   @Override
   public void autonomousInit() {
-    if (selectedAuto != chooser.getSelected()  || previouAlliance != DriverStation.getAlliance()){
-      switch(chooser.getSelected()){
+    if (selectedAuto != chooser.getSelected() || previouAlliance != DriverStation.getAlliance()) {
+      switch (chooser.getSelected()) {
         case "LoadingStaion2P":
           m_autonomousCommand = Autos.getLoadingStationCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Balance":
           m_autonomousCommand = Autos.getBalanceCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Bump":
           m_autonomousCommand = Autos.getBumpCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Stupid":
           m_autonomousCommand = Autos.getStupidCommand(arm, bident, drivetrain, intake);
-        break;
+          break;
         case "Bump2P":
           m_autonomousCommand = Autos.getBumpPart1Command(arm, bident, drivetrain, intake);
           break;
@@ -240,7 +279,8 @@ public class Robot extends TimedRobot {
     Trigger lowGoalConeTrigger = operatorController.a().and(CubeTrigger.negate());
     Trigger lowGoalCubeTrigger = operatorController.a().and(CubeTrigger);
 
-    Trigger groundIntake = operatorController.leftStick().and(CubeTrigger.negate());;
+    Trigger groundIntake = operatorController.leftStick().and(CubeTrigger.negate());
+    ;
     Trigger groundOuttake = operatorController.leftStick().and(CubeTrigger);
 
     Trigger cubeIndicatorTrigger = operatorController.povDown();
@@ -253,13 +293,14 @@ public class Robot extends TimedRobot {
     Trigger gripperReady = new Trigger(gripperSupplier);
 
     brake.whileTrue(drivetrain.brakeCommand());
-    gripperReady.whileTrue(led.accyGreem()); 
+    gripperReady.whileTrue(led.accyGreem());
     gripperReady.whileFalse((led.actuallyColor()));
-    //led.setDefaultCommand(led.actuallyColor());
-   // Trigger isDisabled = new Trigger(() -> isDisabled());
-   // isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
+    // led.setDefaultCommand(led.actuallyColor());
+    // Trigger isDisabled = new Trigger(() -> isDisabled());
+    // isDisabled.whileTrue(led.fadeCommand().ignoringDisable(true));
 
-    operatorController.rightStick().onTrue(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
+    operatorController.rightStick().onTrue(
+        arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0)));
     highGoalConeTrigger.onTrue(arm.elbowPositionCommand(-133.0).andThen(arm.shoulderPositionCommand(-38.0)));
     highGoalCubeTrigger.onTrue(arm.elbowPositionCommand(-102).andThen(arm.shoulderPositionCommand(-17)));
     MidGoalConeTrigger.onTrue(arm.elbowPositionCommand(-98).andThen(arm.shoulderPositionCommand(-13)));
@@ -276,20 +317,27 @@ public class Robot extends TimedRobot {
 
     operatorController.back().whileTrue(arm.resetEncoder());
 
-    operatorController.povRight().toggleOnTrue(arm.getManualArmCommand(()->operatorController.getLeftY(), ()->operatorController.getRightY()).alongWith(led.setOrange()));
+    operatorController.povRight()
+        .toggleOnTrue(arm.getManualArmCommand(() -> operatorController.getLeftY(), () -> operatorController.getRightY())
+            .alongWith(led.setOrange()));
 
-    DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis();
-      
+    DoubleSupplier intakeSpeed = () -> operatorController.getLeftTriggerAxis()
+        - operatorController.getRightTriggerAxis();
+
     // bident.setDefaultCommand(new manualGripper3(bident, intakeSpeed));
 
-    operatorController.leftTrigger(0).whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
+    operatorController.leftTrigger(0)
+        .whileTrue(bident.autoGrabCommand(intakeSpeed).alongWith(intake.getIntakeCommand()));
     operatorController.leftTrigger(0).onFalse(bident.actuallyNeutral());
     operatorController.rightTrigger(0).whileTrue(bident.ejectWithoutOpeningCommand(intakeSpeed));
 
-    groundIntake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75).alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));    
-    groundIntake.onFalse(arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0).andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0))));
-    groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
-
+    groundIntake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(
+        arm.elbowPositionCommand(18).andThen(arm.shoulderPositionCommand(20).andThen(arm.elbowPositionCommand(11.75)
+            .alongWith(bident.grabCubeCommand(1.0).alongWith(intake.getIntakeCommand()))))));
+    groundIntake.onFalse(arm.elbowPositionCommand(20).andThen(arm.shoulderPositionCommand(0)
+        .andThen(arm.elbowPositionCommand(0)).andThen(intake.getIntakePivotCommand(0.0))));
+    groundOuttake.whileTrue(intake.getIntakePivotCommand(98.0).andThen(
+        arm.elbowPositionCommand(17).andThen(arm.shoulderPositionCommand(17).alongWith(intake.getOuttakeCommand()))));
 
     operatorController.button(8).onTrue(arm.ToggleSlowMode());
 
